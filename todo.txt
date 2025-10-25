@@ -1,0 +1,5 @@
+Setup data base with a user table and a piano key table
+
+Actually get a real login / logout working
+
+Start on the piano key tune setup page
