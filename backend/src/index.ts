@@ -7,6 +7,7 @@ import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes";
 import pianoRoutes from "./routes/pianoRoutes";
 import pool from "./database";
+import errorHandler from "./middleware/errorHandler";
 
 dotenv.config({ path: "./config.env" });
 const app: Application = express();
@@ -28,6 +29,9 @@ app.use(cookieParser());
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/piano", pianoRoutes);
+
+// Global Error Handler
+app.use(errorHandler);
 
 pool.query("SELECT NOW()", (err, res) => {
   if (err) {
