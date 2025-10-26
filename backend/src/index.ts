@@ -6,14 +6,15 @@ import http, { Server } from "http";
 import dotenv from "dotenv";
 import userRoutes from "./routes/userRoutes";
 import pianoRoutes from "./routes/pianoRoutes";
+import pool from "./database";
 
 dotenv.config({ path: "./config.env" });
 const app: Application = express();
 const server: Server = http.createServer(app);
 
-const port: string = process.env.PORT || "3000";
-const frontendPort: string = process.env.FRONTEND_PORT || "5173";
-const protocol: string = process.env.PROTOCOL || "http";
+const port: string = process.env.PORT!;
+const frontendPort: string = process.env.FRONTEND_PORT!;
+const protocol: string = process.env.PROTOCOL!;
 
 // Parses incoming JSON requests
 app.use(express.json());
@@ -27,6 +28,17 @@ app.use(cookieParser());
 // Routes
 app.use("/api/users", userRoutes);
 app.use("/api/piano", pianoRoutes);
+
+pool.query("SELECT NOW()", (err, res) => {
+  if (err) {
+    console.error("Error connecting to the database", err.stack);
+  } else {
+    console.log(
+      "Database connection successful. Server time is:",
+      res.rows[0].now
+    );
+  }
+});
 
 server.listen(port, () => {
   console.log(`The server is running on ${protocol}://localhost:${port}`);
