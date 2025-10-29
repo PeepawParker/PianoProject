@@ -1,5 +1,5 @@
-Setup data base with a user table and a piano key table
+Finish the login and auth controller make sure to comment the code
 
-Actually get a real login / logout working
+Actually get a real login / logout working on the frontend
 
-Start on the piano key tune setup page
+Start on the piano key tune setup page figure out how you are going to measure the sound and store it in the database
