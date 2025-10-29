@@ -24,3 +24,22 @@ export async function getUserByUsername(username: string) {
     client.release();
   }
 }
+
+export async function postNewUser(
+  username: string,
+  password: string,
+  email: string
+) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `INSERT INTO users(username, email, password)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [username, email, password]
+    );
+    return result.rows[0];
+  } finally {
+    client.release();
+  }
+}
