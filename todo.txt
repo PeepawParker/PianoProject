@@ -1,4 +1,4 @@
-Finish the login and auth controller make sure to comment the code
+Set up the login functionality in the backend
 
 Actually get a real login / logout working on the frontend
 

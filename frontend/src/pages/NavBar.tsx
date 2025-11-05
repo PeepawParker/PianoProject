@@ -1,9 +1,10 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 
 function NavBar() {
   return (
     <>
-      <h1>navbar</h1>
+      <Link to={"/signup"}>Signup</Link>
+      <Link to={"/login"}>Login</Link>
       <Outlet />
     </>
   );

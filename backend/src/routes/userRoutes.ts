@@ -7,7 +7,7 @@ import { asyncHandler } from "../utils/catchAsync";
 const router: Router = express.Router();
 
 router.post(
-  "/login",
+  "/signup",
   asyncHandler(userMiddleware.checkNewUserData),
   asyncHandler(authController.signup)
 );

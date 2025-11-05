@@ -1,12 +1,31 @@
+import { useState } from "react";
 import { login } from "../api/Users/auth";
 
-function LoginPage() {
+function SignupPage() {
+  const [username, setUsername] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
   return (
     <>
-      <input />
-      <button onClick={() => login()}>Submit</button>
+      <div>
+        <input
+          placeholder="Username/Email"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+      </div>
+      <div>
+        <input
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          type="password"
+        />
+      </div>
+
+      <button onClick={() => login(username, password)}>Submit</button>
     </>
   );
 }
 
-export default LoginPage;
+export default SignupPage;
