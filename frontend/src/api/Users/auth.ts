@@ -28,6 +28,7 @@ export async function login(username: string, password: string) {
     );
 
     console.log(response.data.status);
+    console.log(response.data);
   } catch (err: unknown) {
     console.error("There was a problem logging in", err);
   }

@@ -6,10 +6,14 @@ import { asyncHandler } from "../utils/catchAsync";
 
 const router: Router = express.Router();
 
-router.post(
-  "/signup",
-  asyncHandler(userMiddleware.checkNewUserData),
-  asyncHandler(authController.signup)
-);
+// This allows for multiple methods to be called from the same path GET, POST, DELETE, etc...
+router
+  .route("/signup")
+  .post(
+    asyncHandler(userMiddleware.checkNewUserData),
+    asyncHandler(authController.signup)
+  );
+
+router.route("/login").post(asyncHandler(authController.login));
 
 export default router;

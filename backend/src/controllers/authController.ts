@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import * as userModel from "../models/userModels";
 import bcrypt from "bcrypt";
+import AppError from "../utils/appError";
 
 export async function signup(req: Request, res: Response, next: NextFunction) {
   const username: string = req.body.username;
@@ -12,5 +13,38 @@ export async function signup(req: Request, res: Response, next: NextFunction) {
   const user = await userModel.postNewUser(username, hashedPassword, email);
   res.status(201).json({
     status: "success",
+  });
+}
+
+export async function login(req: Request, res: Response, next: NextFunction) {
+  const username: string = req.body.username;
+  const password: string = req.body.password;
+  let user;
+
+  if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(username)) {
+    user = await userModel.getUserByEmail(username);
+  } else {
+    user = await userModel.getUserByUsername(username);
+  }
+
+  if (!user) {
+    return next(new AppError("Incorrect Username/Password", 400));
+  }
+
+  console.log(user);
+
+  const correctPassword: boolean = await bcrypt.compare(
+    password,
+    user.password
+  );
+
+  console.log(correctPassword);
+
+  if (!correctPassword) {
+    return next(new AppError("Incorrect Username/Password", 400));
+  }
+  res.status(200).json({
+    status: "success",
+    user,
   });
 }
