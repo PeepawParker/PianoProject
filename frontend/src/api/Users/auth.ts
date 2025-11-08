@@ -1,5 +1,7 @@
 import axios from "axios";
 
+// TODO CORRECTLY TYPE THE RESPONSES THAT ARE RETURNED HERE
+
 export async function signup(
   username: string,
   email: string,

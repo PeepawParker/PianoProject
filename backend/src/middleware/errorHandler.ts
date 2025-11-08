@@ -8,16 +8,25 @@ const errorHandler = (
   req: Request,
   res: Response,
   next: NextFunction
-) => {
-  console.log("An error has occurred");
-  console.log(err.status, err.message, err);
+): void => {
+  // Checks to see if it can use the AppError properties
+  if (err instanceof AppError) {
+    console.log("An error has occurred");
+    console.log(err.status, err.message, err);
 
-  // Returns the status code and error message to the user on the frontend
-  // Doesnt return the entire error message to prevent data leaks
-  res.status(err.statusCode || 500).json({
-    status: err.status || 500,
-    message: err.message || "Internal Server Error",
-  });
+    // Returns the status code and error message to the user on the frontend
+    // Doesnt return the entire error message to prevent data leaks
+    res.status(err.statusCode).json({
+      status: err.status,
+      message: err.message,
+    });
+  } else {
+    console.error(err);
+    res.status(500).json({
+      status: "error",
+      message: "Internal Server Error",
+    });
+  }
 };
 
 export default errorHandler;

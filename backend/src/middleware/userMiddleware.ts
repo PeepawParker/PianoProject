@@ -16,7 +16,7 @@ export async function checkNewUserData(
   req: Request,
   res: Response,
   next: NextFunction
-) {
+): Promise<void> {
   const { username, password, passwordConfirm, email }: NewUserBody = req.body;
 
   if (password.length < 8) {

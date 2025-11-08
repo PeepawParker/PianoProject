@@ -1,7 +1,9 @@
 import { PitchDetector } from "pitchy";
+type PianoListenerSetupReturn = {
+  stop: () => void;
+};
 
 // Simply asks the user if they can use their mic, if they allow then it takes in sounds if the sound passes a clarity score it can be good enough to be used
-// TODO MAKE IT SO THAT THERE IS LIKE A 3 SECOND COUNTDOWN OR SOMETHING AND THEN IT RECORDS AUDIO FOR 3 SECONDS THEN YOU GET THE AVERAGE FREQUENCY OF THE GOOD FREQUENCIES TO BE ADDED TO THE DATABASE FOR THAT NOTE
 
 // returns a promise so that you can't press the button while its currently running
 export function pianoListenerThreeSec() {
@@ -28,7 +30,9 @@ export function pianoListenerThreeSec() {
   });
 }
 
-async function pianoListenerSetup(frequencies: GLfloat[]) {
+async function pianoListenerSetup(
+  frequencies: GLfloat[]
+): Promise<PianoListenerSetupReturn> {
   // audio processing workspace
   const audioCtx = new AudioContext();
   // Makes the audio data accessible to the detector

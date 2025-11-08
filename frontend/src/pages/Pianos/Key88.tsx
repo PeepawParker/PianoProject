@@ -2,7 +2,7 @@ import { useState } from "react";
 import { pianoListenerThreeSec } from "../../util/pianoListenerSetup";
 
 const Key88 = () => {
-  const notes = [
+  const notes: string[] = [
     "A0",
     "A#0",
     "B0",
