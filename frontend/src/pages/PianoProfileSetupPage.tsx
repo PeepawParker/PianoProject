@@ -9,8 +9,18 @@ function PianoProfileSetupPage() {
     <>
       <h1>Listener Page</h1>
       <div>
-        <input placeholder="Name of the piano"></input>
-        <input placeholder="Number of keys"></input>
+        <input
+          placeholder="Name of the piano"
+          onChange={(e) => {
+            setPianoName(e.target.value);
+          }}
+        ></input>
+        <input
+          placeholder="Number of keys"
+          onChange={(e) => {
+            setNumKeys(Number(e.target.value));
+          }}
+        ></input>
         <button onClick={() => postUserPiano(pianoName, numKeys)}>
           Submit
         </button>
