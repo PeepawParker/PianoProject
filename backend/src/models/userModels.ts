@@ -13,7 +13,7 @@ export async function getUserByEmail(email: string): Promise<User> {
   try {
     const result = await client.query<User>(
       "SELECT * FROM users WHERE email = $1",
-      [email]
+      [email.toLowerCase()]
     );
 
     const user = result.rows[0];
@@ -30,11 +30,11 @@ export async function getUserByUsername(username: string): Promise<User> {
   try {
     const result = await client.query<User>(
       "SELECT * FROM users WHERE username = $1",
-      [username]
+      [username.toLowerCase()]
     );
 
     const user = result.rows[0];
-    if (!user) throw new Error("Failed to get user by email");
+    if (!user) throw new Error("Failed to get user by username");
 
     return user;
   } finally {
@@ -53,7 +53,7 @@ export async function postNewUser(
       `INSERT INTO users(username, email, password)
        VALUES ($1, $2, $3)
        RETURNING *`,
-      [username, email, password]
+      [username.toLowerCase(), email.toLowerCase(), password]
     );
 
     const user = result.rows[0];

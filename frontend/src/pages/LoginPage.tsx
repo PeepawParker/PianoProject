@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { login } from "../api/Users/auth";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../stores/store";
 
-function SignupPage() {
+function LoginPage() {
   const [username, setUsername] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+
+  const dispatch = useDispatch<AppDispatch>();
 
   return (
     <>
@@ -23,9 +27,11 @@ function SignupPage() {
         />
       </div>
 
-      <button onClick={() => login(username, password)}>Submit</button>
+      <button onClick={() => login(username, password, dispatch)}>
+        Submit
+      </button>
     </>
   );
 }
 
-export default SignupPage;
+export default LoginPage;

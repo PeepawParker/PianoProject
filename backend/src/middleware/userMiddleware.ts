@@ -32,25 +32,5 @@ export async function checkNewUserData(
     );
   }
 
-  const existingEmail = await userModel.getUserByEmail(email);
-  if (existingEmail) {
-    return next(
-      new AppError(
-        "An account has already been created using this email. Please select a new email, or log into the account that has been created with this email",
-        409
-      )
-    );
-  }
-
-  const existingUsername = await userModel.getUserByUsername(username);
-  if (existingUsername) {
-    return next(
-      new AppError(
-        "An account has already been created using this username. Please select a enter a new username.",
-        409
-      )
-    );
-  }
-
   next();
 }

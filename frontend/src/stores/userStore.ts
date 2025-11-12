@@ -1,6 +1,12 @@
 import { createSlice } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 
-const initialUserState = {
+interface UserState {
+  userId: string | null;
+  username: string | null;
+}
+
+const initialUserState: UserState = {
   userId: null,
   username: null,
 };
@@ -8,13 +14,11 @@ const initialUserState = {
 const userSlice = createSlice({
   name: "user",
   initialState: initialUserState,
+  // reducers are pure functions that determine how a state should change in response to actions
   reducers: {
-    login(state, action) {
-      return {
-        ...state,
-        userId: action.payload.userId,
-        username: action.payload.username,
-      };
+    login(state, action: PayloadAction<{ userId: string; username: string }>) {
+      state.userId = action.payload.userId;
+      state.username = action.payload.username;
     },
     resetUser() {
       return initialUserState;
@@ -22,6 +26,8 @@ const userSlice = createSlice({
   },
 });
 
+// Allows other components to import and use these actions altering the current state
 export const userActions = userSlice.actions;
 
+// Exports the reducer for the store.ts to combine with other reducers
 export default userSlice.reducer;

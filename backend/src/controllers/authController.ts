@@ -45,14 +45,10 @@ export async function login(
     return next(new AppError("Incorrect Username/Password", 400));
   }
 
-  console.log(user);
-
   const correctPassword: boolean = await bcrypt.compare(
     password,
     user.password
   );
-
-  console.log(correctPassword);
 
   if (!correctPassword) {
     return next(new AppError("Incorrect Username/Password", 400));

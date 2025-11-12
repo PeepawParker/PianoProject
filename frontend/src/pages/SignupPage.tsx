@@ -1,11 +1,14 @@
 import { useState } from "react";
 import { signup } from "../api/Users/auth";
+import { useDispatch } from "react-redux";
+import type { AppDispatch } from "../stores/store";
 
 function SignupPage() {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
+  const dispatch = useDispatch<AppDispatch>();
 
   return (
     <>
@@ -40,7 +43,9 @@ function SignupPage() {
         />
       </div>
       <button
-        onClick={() => signup(username, email, password, passwordConfirm)}
+        onClick={() =>
+          signup(username, email, password, passwordConfirm, dispatch)
+        }
       >
         Submit
       </button>

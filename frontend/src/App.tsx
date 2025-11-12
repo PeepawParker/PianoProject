@@ -1,4 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { store, persistor } from "./stores/store";
 import HomePage from "./pages/HomePage";
 import NavBar from "./pages/NavBar";
 import SignupPage from "./pages/SignupPage";
@@ -24,7 +27,12 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
-      <RouterProvider router={router} />
+      <Provider store={store}>
+        {/* Loading is what the user is shown while the data rehydrates */}
+        <PersistGate loading={<div>Loading...</div>} persistor={persistor}>
+          <RouterProvider router={router} />
+        </PersistGate>
+      </Provider>
     </>
   );
 }
