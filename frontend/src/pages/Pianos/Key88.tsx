@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { pianoListenerThreeSec } from "../../util/pianoListenerSetup";
+import PianoRange from "../../util/PianoRange";
+import GrandStaff from "../../util/GrandStaff";
 
 const Key88 = () => {
   const notes: string[] = [
@@ -105,6 +107,8 @@ const Key88 = () => {
     }
   };
 
+  // It is going to start with a default range of the most common treble clef notes, and thenf rom there you can adjust the high and the low using a slider that will move the notes up or down the staff to show the range of values you will be inputting
+
   return (
     <>
       <p>Number of keys left to map {88 - curCount}</p>
@@ -113,6 +117,8 @@ const Key88 = () => {
       </button>
       {/* MAKE A WAY TO REMAP THE KEY YOU JUST DID */}
       {curCount > 0 ? <button>Retry</button> : <></>}
+
+      <PianoRange values={notes} numKeys={88} />
     </>
   );
 };
