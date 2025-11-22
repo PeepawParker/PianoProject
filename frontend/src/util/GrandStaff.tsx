@@ -9,7 +9,8 @@ import {
   Formatter,
 } from "vexflow";
 
-// fix the issue where the accidental stays on the note
+// TODO make the notes land 1 bar lower for all of them
+// TODO fix the issue where the accidental stays on the note
 // Then make it so you can submit this and it adds the notes that have been mapped so far as it listens to the piano
 
 interface GrandStaffProps {

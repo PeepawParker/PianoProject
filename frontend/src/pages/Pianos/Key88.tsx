@@ -4,6 +4,7 @@ import PianoRange from "../../util/PianoRange";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../../stores/store";
+import { postUserPianoKey } from "../../api/Piano/postPiano";
 
 const Key88 = () => {
   const notes: string[] = [
@@ -109,7 +110,7 @@ const Key88 = () => {
       const avg: GLfloat = await pianoListenerThreeSec(low);
       console.log(avg, "average recieved");
       // TODO get the userID pianoName to allow this to get send to backend
-      // postUserPianoKey(avg, userId, pianoId);
+      postUserPianoKey(pianoId!, avg, notes[low]);
     } finally {
       setLow((prevLow) => prevLow + 1);
       setListening(false);

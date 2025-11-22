@@ -16,12 +16,12 @@ export async function postUserPiano(
 
 export async function postUserPianoKey(
   pianoId: string,
-  userId: string,
-  frequency: GLfloat
+  frequency: GLfloat,
+  currentNote: string
 ) {
   const response = await axios.post(
     `http://localhost:3000/api/piano/setup/key`,
-    { pianoId, userId, frequency },
+    { pianoId, frequency, currentNote },
     { withCredentials: true }
   );
 

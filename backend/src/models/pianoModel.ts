@@ -7,6 +7,11 @@ export interface Piano {
   num_keys: number;
 }
 
+interface Note {
+  id: number;
+  name: string;
+}
+
 export async function postPiano(
   pianoName: string,
   numKeys: number,
@@ -41,6 +46,49 @@ export async function getPianosByUserId(userId: number) {
     );
 
     return result.rows;
+  } finally {
+    client.release();
+  }
+}
+
+export async function getPianoById(pianoId: number) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query<Piano>(
+      `SELECT * FROM pianos WHERE id = $1`,
+      [pianoId]
+    );
+
+    return result.rows[0];
+  } finally {
+    client.release();
+  }
+}
+
+export async function getNoteFromString(note: string) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query<Note>(
+      `SELECT * FROM notes WHERE name = $1`,
+      [note]
+    );
+    return result.rows[0];
+  } finally {
+    client.release();
+  }
+}
+
+export async function postPianoKey(
+  pianoId: number,
+  frequency: GLfloat,
+  note: Note
+) {
+  const client = await pool.connect();
+  try {
+    await client.query(
+      `INSERT INTO user_keys (piano_id, note_id, frequency) VALUES ($1, $2, $3)`,
+      [pianoId, note.id, frequency]
+    );
   } finally {
     client.release();
   }

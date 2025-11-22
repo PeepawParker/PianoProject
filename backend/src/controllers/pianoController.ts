@@ -2,16 +2,10 @@ import { NextFunction, Request, Response } from "express";
 import { Piano } from "../models/pianoModel";
 import * as pianoModel from "../models/pianoModel";
 
-export async function setup(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> {
+export async function setup(req: Request, res: Response): Promise<void> {
   const pianoName: string = req.body.pianoName;
   const numKeys: number = req.body.numKeys;
   const userId: number = req.body.userId;
-
-  console.log("Are we even entering the function??");
 
   const piano: Piano = await pianoModel.postPiano(pianoName, numKeys, userId);
 
@@ -19,4 +13,28 @@ export async function setup(
     status: "success",
     piano,
   });
+}
+
+export async function postKeyFrequency(
+  req: Request,
+  res: Response
+): Promise<void> {
+  const {
+    pianoId,
+    frequency,
+    currentNote,
+  }: {
+    pianoId: string;
+    frequency: GLfloat;
+    currentNote: string;
+  } = req.body;
+
+  const note = await pianoModel.getNoteFromString(currentNote);
+  if (note) {
+    await pianoModel.postPianoKey(+pianoId, frequency, note);
+  } else {
+    // TODO send error
+  }
+
+  res.status(200);
 }

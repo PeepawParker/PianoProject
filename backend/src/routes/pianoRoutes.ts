@@ -5,5 +5,6 @@ import * as pianoController from "../controllers/pianoController";
 const router: Router = express.Router();
 
 router.route("/setup").post(asyncHandler(pianoController.setup));
+router.route("/setup/key").post(asyncHandler(pianoController.postKeyFrequency));
 
 export default router;
