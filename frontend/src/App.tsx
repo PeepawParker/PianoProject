@@ -8,6 +8,7 @@ import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
 import PianoSetupPage from "./pages/PianoProfileSetupPage";
 import PianoKeySetupPage from "./pages/PianoKeySetupPage";
+import PianoHomePage from "./pages/PianoHomePage";
 
 const router = createBrowserRouter([
   {
@@ -19,7 +20,8 @@ const router = createBrowserRouter([
       { path: "/signup", element: <SignupPage /> },
       { path: "/login", element: <LoginPage /> },
       { path: "/pianoSetup", element: <PianoSetupPage /> },
-      { path: "/pianoKeySetup", element: <PianoKeySetupPage /> },
+      { path: "/pianoKeySetup/:pianoId", element: <PianoKeySetupPage /> },
+      { path: "/pianoHomePage/:pianoId", element: <PianoHomePage /> },
     ],
   },
 ]);

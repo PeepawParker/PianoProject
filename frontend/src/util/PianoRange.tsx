@@ -18,12 +18,22 @@ interface Note {
 interface PianoRangeProps {
   values: string[];
   numKeys: number;
+  high: number;
+  setHigh: (num: number) => void;
+  low: number;
+  setLow: (num: number) => void;
+  readyToListen: boolean;
 }
 
-export default function PianoRange({ values, numKeys }: PianoRangeProps) {
-  // Get list of these values for other pianos based on the numKeys
-  const [low, setLow] = useState<number>(numKeys === 88 ? 22 : 0);
-  const [high, setHigh] = useState<number>(numKeys === 88 ? 56 : numKeys - 1);
+export default function PianoRange({
+  values,
+  numKeys,
+  high,
+  low,
+  setHigh,
+  setLow,
+  readyToListen,
+}: PianoRangeProps) {
   const [lowParsed, setLowParsed] = useState<Note>({
     baseNote: "E/2",
     isSharp: false,
@@ -54,22 +64,26 @@ export default function PianoRange({ values, numKeys }: PianoRangeProps) {
       <p>
         {values[low]} to {values[high]}
       </p>
-      <input
-        type="number"
-        min={0}
-        max={numKeys - 1}
-        step={1}
-        value={low}
-        onChange={(e) => handleLowChange(+e.target.value)}
-      />
-      <input
-        type="number"
-        min={0}
-        max={numKeys - 1}
-        step={1}
-        value={high}
-        onChange={(e) => handleHighChange(+e.target.value)}
-      />
+      {readyToListen ? null : (
+        <div>
+          <input
+            type="number"
+            min={0}
+            max={numKeys - 1}
+            step={1}
+            value={low}
+            onChange={(e) => handleLowChange(+e.target.value)}
+          />
+          <input
+            type="number"
+            min={0}
+            max={numKeys - 1}
+            step={1}
+            value={high}
+            onChange={(e) => handleHighChange(+e.target.value)}
+          />
+        </div>
+      )}
     </>
   );
 }

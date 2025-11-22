@@ -31,3 +31,17 @@ export async function postPiano(
     client.release();
   }
 }
+
+export async function getPianosByUserId(userId: number) {
+  const client = await pool.connect();
+  try {
+    const result = await client.query<Piano>(
+      `SELECT * FROM pianos WHERE user_id = $1`,
+      [userId]
+    );
+
+    return result.rows;
+  } finally {
+    client.release();
+  }
+}

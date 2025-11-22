@@ -16,4 +16,6 @@ router
 
 router.route("/login").post(asyncHandler(authController.login));
 
+router.route("/piano/:userId").get(asyncHandler(userController.getUserPianos));
+
 export default router;

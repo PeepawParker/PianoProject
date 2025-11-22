@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import {
   Renderer,
   Stave,
@@ -27,6 +27,8 @@ export default function GrandStaff({
 }: GrandStaffProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
+  console.log(`here is the lowNoteValue ${lowNoteValue}`);
+
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -34,14 +36,14 @@ export default function GrandStaff({
     containerRef.current.innerHTML = "";
 
     const vf = new Renderer(containerRef.current, Renderer.Backends.SVG);
-    vf.resize(500, 180);
+    vf.resize(500, 300);
     const context = vf.getContext();
 
-    const trebleStave = new Stave(10, 0, 480);
+    const trebleStave = new Stave(10, 70, 480);
     trebleStave.addClef("treble");
     trebleStave.setContext(context).draw();
 
-    const bassStave = new Stave(10, 80, 480);
+    const bassStave = new Stave(10, 130, 480);
     bassStave.addClef("bass");
     bassStave.setContext(context).draw();
 
@@ -83,8 +85,6 @@ export default function GrandStaff({
     });
     if (lowIsSharp) {
       lowNote.addModifier(new Accidental("#"), 0);
-    } else {
-      lowNote.addModifier(new Accidental("n"), 0);
     }
 
     const bassVoice = new Voice({ numBeats: 1, beatValue: 4 });
@@ -94,5 +94,5 @@ export default function GrandStaff({
   }, [highNoteValue, lowNoteValue, lowIsSharp, highIsSharp]);
 
   // Creates the ref
-  return <div ref={containerRef}></div>;
+  return <div ref={containerRef} style={{ marginTop: "50px" }}></div>;
 }

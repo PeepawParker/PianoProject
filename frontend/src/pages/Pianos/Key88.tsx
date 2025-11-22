@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { pianoListenerThreeSec } from "../../util/pianoListenerSetup";
 import PianoRange from "../../util/PianoRange";
-import GrandStaff from "../../util/GrandStaff";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { AppRootState } from "../../stores/store";
 
 const Key88 = () => {
   const notes: string[] = [
@@ -94,15 +96,22 @@ const Key88 = () => {
     "B7",
     "C8",
   ];
-  const [curCount, setCurCount] = useState<number>(0);
+  const { userId } = useSelector((state: AppRootState) => state.user);
+  const { pianoId } = useParams();
   const [listening, setListening] = useState<boolean>(false);
+  const [readyToListen, setReadyToListen] = useState<boolean>(false);
+  const [low, setLow] = useState<number>(19);
+  const [high, setHigh] = useState<number>(56);
 
   const handleClick = async () => {
     setListening(true);
     try {
-      await pianoListenerThreeSec();
+      const avg: GLfloat = await pianoListenerThreeSec(low);
+      console.log(avg, "average recieved");
+      // TODO get the userID pianoName to allow this to get send to backend
+      // postUserPianoKey(avg, userId, pianoId);
     } finally {
-      setCurCount((prevCount) => prevCount + 1);
+      setLow((prevLow) => prevLow + 1);
       setListening(false);
     }
   };
@@ -111,14 +120,37 @@ const Key88 = () => {
 
   return (
     <>
-      <p>Number of keys left to map {88 - curCount}</p>
-      <button onClick={handleClick} disabled={listening}>
-        {listening ? "Listening..." : "Click to listen"}
-      </button>
-      {/* MAKE A WAY TO REMAP THE KEY YOU JUST DID */}
-      {curCount > 0 ? <button>Retry</button> : <></>}
+      <PianoRange
+        values={notes}
+        numKeys={88}
+        low={low}
+        high={high}
+        setHigh={setHigh}
+        setLow={setLow}
+        readyToListen={readyToListen}
+      />
 
-      <PianoRange values={notes} numKeys={88} />
+      {readyToListen ? (
+        <div>
+          <p>Number of keys left to map {high - low} </p>{" "}
+          <p>Currently Listening to {notes[low]} </p>
+        </div>
+      ) : null}
+      <div>
+        <button
+          disabled={listening}
+          onClick={
+            readyToListen ? () => handleClick() : () => setReadyToListen(true)
+          }
+        >
+          {readyToListen
+            ? listening
+              ? "Listening"
+              : "Click To Listen"
+            : "Submit"}
+        </button>
+        {readyToListen ? <button>Retry</button> : <></>}
+      </div>
     </>
   );
 };

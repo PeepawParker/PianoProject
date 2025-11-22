@@ -11,6 +11,8 @@ export async function setup(
   const numKeys: number = req.body.numKeys;
   const userId: number = req.body.userId;
 
+  console.log("Are we even entering the function??");
+
   const piano: Piano = await pianoModel.postPiano(pianoName, numKeys, userId);
 
   res.status(200).json({
