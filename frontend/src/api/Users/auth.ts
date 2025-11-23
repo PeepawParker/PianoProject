@@ -2,7 +2,6 @@ import axios from "axios";
 import type { AppDispatch } from "../../stores/store";
 import { userActions } from "../../stores/userStore";
 
-// TODO CORRECTLY TYPE THE RESPONSES THAT ARE RETURNED HERE
 interface User {
   status: string;
   user: {

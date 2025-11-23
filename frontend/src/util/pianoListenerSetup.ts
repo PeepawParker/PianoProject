@@ -2,7 +2,7 @@ import { PitchDetector } from "pitchy";
 type PianoListenerSetupReturn = {
   stop: () => void;
 };
-const frequenciesList: GLfloat[] = [
+const frequenciesList: number[] = [
   27.5, 29.14, 30.87, 32.7, 34.65, 36.71, 38.89, 41.2, 43.65, 46.25, 49.0,
   51.91, 55.0, 58.27, 61.74, 65.41, 69.3, 73.42, 77.78, 82.41, 87.31, 92.5,
   98.0, 103.83, 110.0, 116.54, 123.47, 130.81, 138.59, 146.83, 155.56, 164.81,
@@ -17,16 +17,16 @@ const frequenciesList: GLfloat[] = [
 // Simply asks the user if they can use their mic, if they allow then it takes in sounds if the sound passes a clarity score it can be good enough to be used
 
 // returns a promise so that you can't press the button while its currently running
-export function pianoListenerThreeSec(index: number): Promise<GLfloat> {
+export function pianoListenerThreeSec(index: number): Promise<number> {
   return new Promise((resolve) => {
-    const frequencies: GLfloat[] = [];
+    const frequencies: number[] = [];
     pianoListenerSetup(frequencies).then(({ stop }) => {
       // Stops detect after 3 seconds
       setTimeout(() => {
         stop();
-        const newFrequencies: GLfloat[] = [];
-        let total: GLfloat = 0;
-        let average: GLfloat;
+        const newFrequencies: number[] = [];
+        let total: number = 0;
+        let average: number;
         frequencies.forEach((num) => {
           if (
             num > 25 &&
@@ -62,7 +62,7 @@ export function pianoListenerThreeSec(index: number): Promise<GLfloat> {
 }
 
 async function pianoListenerSetup(
-  frequencies: GLfloat[]
+  frequencies: number[]
 ): Promise<PianoListenerSetupReturn> {
   // audio processing workspace
   const audioCtx = new AudioContext();
@@ -86,7 +86,7 @@ async function pianoListenerSetup(
   source.connect(analyser); // Connects the converted stream to the analyser
 
   let running = true;
-  function detect(frequencies: GLfloat[]) {
+  function detect(frequencies: number[]) {
     if (!running) return;
     // Gets the current audio and puts it in the buffer (the thing that holds the raw data)
     analyser.getFloatTimeDomainData(buffer);

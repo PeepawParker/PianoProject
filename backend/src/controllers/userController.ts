@@ -14,3 +14,12 @@ export async function getUserPianos(
     userPianos,
   });
 }
+
+export async function getUserPianoKeys(
+  req: Request,
+  res: Response
+): Promise<void> {
+  const pianoId: number = parseInt(req.params.pianoId!, 10);
+
+  const userPianoKeys = await pianoModel.getMappedKeysByPianoId(pianoId);
+}

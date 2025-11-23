@@ -25,7 +25,7 @@ export async function postKeyFrequency(
     currentNote,
   }: {
     pianoId: string;
-    frequency: GLfloat;
+    frequency: number;
     currentNote: string;
   } = req.body;
 

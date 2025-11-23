@@ -2,8 +2,6 @@ import { useState } from "react";
 import { pianoListenerThreeSec } from "../../util/pianoListenerSetup";
 import PianoRange from "../../util/PianoRange";
 import { useParams } from "react-router-dom";
-import { useSelector } from "react-redux";
-import type { AppRootState } from "../../stores/store";
 import { postUserPianoKey } from "../../api/Piano/postPiano";
 
 const Key88 = () => {
@@ -97,7 +95,6 @@ const Key88 = () => {
     "B7",
     "C8",
   ];
-  const { userId } = useSelector((state: AppRootState) => state.user);
   const { pianoId } = useParams();
   const [listening, setListening] = useState<boolean>(false);
   const [readyToListen, setReadyToListen] = useState<boolean>(false);
@@ -107,7 +104,7 @@ const Key88 = () => {
   const handleClick = async () => {
     setListening(true);
     try {
-      const avg: GLfloat = await pianoListenerThreeSec(low);
+      const avg: number = await pianoListenerThreeSec(low);
       console.log(avg, "average recieved");
       // TODO get the userID pianoName to allow this to get send to backend
       postUserPianoKey(pianoId!, avg, notes[low]);

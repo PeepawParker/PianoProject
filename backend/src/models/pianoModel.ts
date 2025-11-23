@@ -7,7 +7,14 @@ export interface Piano {
   num_keys: number;
 }
 
-interface Note {
+export interface PianoKey {
+  id: number;
+  piano_id: number;
+  note_id: number;
+  frequency: number;
+}
+
+export interface Note {
   id: number;
   name: string;
 }
@@ -80,7 +87,7 @@ export async function getNoteFromString(note: string) {
 
 export async function postPianoKey(
   pianoId: number,
-  frequency: GLfloat,
+  frequency: number,
   note: Note
 ) {
   const client = await pool.connect();
@@ -89,6 +96,27 @@ export async function postPianoKey(
       `INSERT INTO user_keys (piano_id, note_id, frequency) VALUES ($1, $2, $3)`,
       [pianoId, note.id, frequency]
     );
+  } finally {
+    client.release();
+  }
+}
+
+export async function getMappedKeysByPianoId(
+  pianoId: number
+): Promise<PianoKey[]> {
+  const client = await pool.connect();
+  try {
+    const result = await client.query<PianoKey>(
+      `
+      SELECT * FROM user_keys WHERE piano_id = $1
+    `,
+      [pianoId]
+    );
+
+    const pianoKeys = result.rows;
+    if (!pianoKeys) throw new Error("Failed to get keys from pianoId");
+
+    return pianoKeys;
   } finally {
     client.release();
   }

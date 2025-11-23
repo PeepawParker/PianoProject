@@ -1,5 +1,9 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GrandStaff from "./GrandStaff";
+import { useSelector } from "react-redux";
+import type { AppRootState } from "../stores/store";
+import { useParams } from "react-router-dom";
+import { getUserMappedKeys, type PianoKey } from "../api/Piano/getPiano";
 
 function parseNotes(note: string) {
   note = note.slice(0, 1) + "/" + note.slice(1);
@@ -34,6 +38,9 @@ export default function PianoRange({
   setLow,
   readyToListen,
 }: PianoRangeProps) {
+  const { userId } = useSelector((state: AppRootState) => state.user);
+  const { pianoId } = useParams();
+  const [userKeys, setUserKeys] = useState<PianoKey[] | undefined>(undefined);
   const [lowParsed, setLowParsed] = useState<Note>({
     baseNote: "E/2",
     isSharp: false,
@@ -53,6 +60,10 @@ export default function PianoRange({
     setHighParsed(parseNotes(values[num]));
   };
 
+  useEffect(() => {
+    if (userId && pianoId) getUserMappedKeys(+userId, +pianoId, setUserKeys);
+  }, [pianoId, userId]);
+
   return (
     <>
       <GrandStaff
@@ -60,6 +71,7 @@ export default function PianoRange({
         highIsSharp={highParsed?.isSharp}
         lowNoteValue={lowParsed.baseNote}
         lowIsSharp={lowParsed?.isSharp}
+        userKeys={userKeys}
       />
       <p>
         {values[low]} to {values[high]}

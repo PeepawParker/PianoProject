@@ -16,7 +16,7 @@ export async function postUserPiano(
 
 export async function postUserPianoKey(
   pianoId: string,
-  frequency: GLfloat,
+  frequency: number,
   currentNote: string
 ) {
   const response = await axios.post(

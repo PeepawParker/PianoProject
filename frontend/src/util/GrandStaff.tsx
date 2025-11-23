@@ -8,6 +8,7 @@ import {
   Voice,
   Formatter,
 } from "vexflow";
+import type { PianoKey } from "../api/Piano/getPiano";
 
 // TODO make the notes land 1 bar lower for all of them
 // TODO fix the issue where the accidental stays on the note
@@ -18,13 +19,18 @@ interface GrandStaffProps {
   lowNoteValue: string;
   highIsSharp: boolean;
   lowIsSharp: boolean;
+  userKeys: PianoKey[] | undefined;
 }
+
+// TODO have this update and to see what notes the user already has mapped
+// TODO make these notes clickable allowing the user to go back to this index and remap the frequency
 
 export default function GrandStaff({
   highNoteValue,
   lowNoteValue,
   highIsSharp,
   lowIsSharp,
+  userKeys,
 }: GrandStaffProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -92,7 +98,7 @@ export default function GrandStaff({
     bassVoice.addTickables([lowNote]);
     new Formatter().joinVoices([bassVoice]).format([bassVoice], 400);
     bassVoice.draw(context, bassStave);
-  }, [highNoteValue, lowNoteValue, lowIsSharp, highIsSharp]);
+  }, [highNoteValue, lowNoteValue, lowIsSharp, highIsSharp, userKeys]);
 
   // Creates the ref
   return <div ref={containerRef} style={{ marginTop: "50px" }}></div>;
