@@ -31,8 +31,12 @@ export async function getUserMappedKeys(
   );
 
   const userKeys: PianoKey[] = response.data.userPianoKeys;
-  const parsedKeys: Note[] = userKeys.map((key) =>
-    parseNotes(notes[key.note_id - 1])
-  );
+  const parsedKeys: Note[] = userKeys.map((key) => {
+    const note = parseNotes(notes[key.note_id - 1]);
+    return {
+      ...note,
+      note_id: key.note_id,
+    };
+  });
   setUserKeys(parsedKeys);
 }

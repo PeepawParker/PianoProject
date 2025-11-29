@@ -8,21 +8,24 @@ import {
   Voice,
   Formatter,
 } from "vexflow";
-import { notes } from "./notes88";
-import type { Note } from "./PianoRange";
 
-// TODO fix the issue where the accidental stays on the note
-// Then make it so you can submit this and it adds the notes that have been mapped so far as it listens to the piano
+export interface UserNote {
+  baseNote: string;
+  isSharp: boolean;
+  noteId: number;
+}
+
+// TODO make the notes live update as the user submits new frequencies to the database
+// TODO allow users to update note values
 
 interface GrandStaffProps {
   highNoteValue: string;
   lowNoteValue: string;
   highIsSharp: boolean;
   lowIsSharp: boolean;
-  userKeys: Note[] | undefined;
+  userKeys: UserNote[] | undefined;
 }
 
-// TODO have this update and to see what notes the user already has mapped
 // TODO make these notes clickable allowing the user to go back to this index and remap the frequency
 
 export default function GrandStaff({
@@ -100,12 +103,6 @@ export default function GrandStaff({
     // Correctly structure this
     if (userKeys) {
       for (const userKey of userKeys) {
-        console.log(
-          "Hello this should print the already defined notes here: ",
-          userKey.baseNote,
-          "This is what it should look like though: ",
-          lowNoteValue
-        );
         const note = new StaveNote({
           keys: [userKey.baseNote],
           duration: "q",
