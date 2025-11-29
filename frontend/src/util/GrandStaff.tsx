@@ -9,7 +9,7 @@ import {
   Formatter,
 } from "vexflow";
 import { notes } from "./notes88";
-import type { PianoKey } from "../api/Piano/getPiano";
+import type { Note } from "./PianoRange";
 
 // TODO fix the issue where the accidental stays on the note
 // Then make it so you can submit this and it adds the notes that have been mapped so far as it listens to the piano
@@ -19,7 +19,7 @@ interface GrandStaffProps {
   lowNoteValue: string;
   highIsSharp: boolean;
   lowIsSharp: boolean;
-  userKeys: PianoKey[] | undefined;
+  userKeys: Note[] | undefined;
 }
 
 // TODO have this update and to see what notes the user already has mapped
@@ -92,20 +92,36 @@ export default function GrandStaff({
       lowNote.addModifier(new Accidental("#"), 0);
     }
 
+    const bassVoice = new Voice({ numBeats: 1, beatValue: 4 });
+    bassVoice.addTickables([lowNote]);
+    new Formatter().joinVoices([bassVoice]).format([bassVoice], 400);
+    bassVoice.draw(context, bassStave);
+
     // Correctly structure this
     if (userKeys) {
       for (const userKey of userKeys) {
         console.log(
           "Hello this should print the already defined notes here: ",
-          notes[userKey.note_id - 1]
+          userKey.baseNote,
+          "This is what it should look like though: ",
+          lowNoteValue
         );
+        const note = new StaveNote({
+          keys: [userKey.baseNote],
+          duration: "q",
+          clef: "bass",
+        });
+        if (userKey.isSharp) {
+          note.addModifier(new Accidental("#"), 0);
+        }
+        note.setStyle({ fillStyle: "green", strokeStyle: "green" });
+
+        const userVoice = new Voice({ numBeats: 1, beatValue: 4 });
+        userVoice.addTickables([note]);
+        new Formatter().joinVoices([userVoice]).format([userVoice], 400);
+        userVoice.draw(context, bassStave);
       }
     }
-
-    const bassVoice = new Voice({ numBeats: 1, beatValue: 4 });
-    bassVoice.addTickables([lowNote]);
-    new Formatter().joinVoices([bassVoice]).format([bassVoice], 400);
-    bassVoice.draw(context, bassStave);
   }, [highNoteValue, lowNoteValue, lowIsSharp, highIsSharp, userKeys]);
 
   // Creates the ref
