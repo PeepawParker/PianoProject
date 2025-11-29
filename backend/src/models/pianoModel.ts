@@ -19,31 +19,6 @@ export interface Note {
   name: string;
 }
 
-export async function postPiano(
-  pianoName: string,
-  numKeys: number,
-  userId: number
-): Promise<Piano> {
-  const client = await pool.connect();
-  try {
-    const result = await client.query<Piano>(
-      `
-        INSERT INTO pianos(user_id, piano_name, num_keys)
-        VALUES ($1, $2, $3)
-        RETURNING *
-        `,
-      [userId, pianoName, numKeys]
-    );
-
-    const piano = result.rows[0];
-    if (!piano) throw new Error("Failed to insert piano");
-
-    return piano;
-  } finally {
-    client.release();
-  }
-}
-
 export async function getPianosByUserId(userId: number) {
   const client = await pool.connect();
   try {
@@ -85,22 +60,6 @@ export async function getNoteFromString(note: string) {
   }
 }
 
-export async function postPianoKey(
-  pianoId: number,
-  frequency: number,
-  note: Note
-) {
-  const client = await pool.connect();
-  try {
-    await client.query(
-      `INSERT INTO user_keys (piano_id, note_id, frequency) VALUES ($1, $2, $3)`,
-      [pianoId, note.id, frequency]
-    );
-  } finally {
-    client.release();
-  }
-}
-
 export async function getMappedKeysByPianoId(
   pianoId: number
 ): Promise<PianoKey[]> {
@@ -117,6 +76,67 @@ export async function getMappedKeysByPianoId(
     if (!pianoKeys) throw new Error("Failed to get keys from pianoId");
 
     return pianoKeys;
+  } finally {
+    client.release();
+  }
+}
+
+export async function postPiano(
+  pianoName: string,
+  numKeys: number,
+  userId: number
+): Promise<Piano> {
+  const client = await pool.connect();
+  try {
+    const result = await client.query<Piano>(
+      `
+        INSERT INTO pianos(user_id, piano_name, num_keys)
+        VALUES ($1, $2, $3)
+        RETURNING *
+        `,
+      [userId, pianoName, numKeys]
+    );
+
+    const piano = result.rows[0];
+    if (!piano) throw new Error("Failed to insert piano");
+
+    return piano;
+  } finally {
+    client.release();
+  }
+}
+
+export async function postPianoKey(
+  pianoId: number,
+  frequency: number,
+  note: Note
+) {
+  const client = await pool.connect();
+  try {
+    await client.query(
+      `INSERT INTO user_keys (piano_id, note_id, frequency) 
+      VALUES ($1, $2, $3)`,
+      [pianoId, note.id, frequency]
+    );
+  } finally {
+    client.release();
+  }
+}
+
+export async function putPianoKey(
+  pianoId: number,
+  frequency: number,
+  note: Note
+) {
+  const client = await pool.connect();
+  try {
+    await client.query(
+      `
+      UPDATE user_keys
+      SET frequency = $1
+      WHERE piano_id = $2 AND note_id = $3`,
+      [frequency, pianoId, note.id]
+    );
   } finally {
     client.release();
   }

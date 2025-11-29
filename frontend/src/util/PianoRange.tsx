@@ -3,10 +3,10 @@ import GrandStaff, { type UserNote } from "./GrandStaff";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { useParams } from "react-router-dom";
-import { getUserMappedKeys } from "../api/Piano/getPiano";
+import { getUserMappedKeys } from "../api/piano";
 import parseNotes from "./parseNotes";
 
-interface Note {
+export interface Note {
   baseNote: string;
   isSharp: boolean;
 }
@@ -59,7 +59,7 @@ export default function PianoRange({
   useEffect(() => {
     if (userId && pianoId)
       getUserMappedKeys(+userId, +pianoId, setUserKeys, parseNotes);
-  }, [pianoId, userId]);
+  }, [pianoId, setUserKeys, userId]);
 
   return (
     <>

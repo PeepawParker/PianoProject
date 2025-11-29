@@ -7,3 +7,5 @@ Get a user store setup so the userInfo can be accessible from all of the pages
 Start on the piano key tune setup page figure out how you are going to measure the sound and store it in the database
 
 Eventually make it so that the range the listener accepts changes based on the current note its listening for
+
+Move the GrandStaff and PianoRange into folders and sort all teh ther pages into their own folders as necessary

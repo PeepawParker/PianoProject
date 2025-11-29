@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { postUserPiano } from "../api/Piano/postPiano";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
+import { postUserPiano } from "../api/piano";
 
 function PianoProfileSetupPage() {
   const [pianoName, setPianoName] = useState<string>("");

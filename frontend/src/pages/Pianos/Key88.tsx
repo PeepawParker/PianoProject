@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { pianoListenerThreeSec } from "../../util/pianoListenerSetup";
 import PianoRange from "../../util/PianoRange";
 import { useParams } from "react-router-dom";
-import { postUserPianoKey } from "../../api/Piano/postPiano";
 import { notes } from "../../util/notes88";
 import type { UserNote } from "../../util/GrandStaff";
+import { postPutUserPianoKey } from "../../api/piano";
 
 const Key88 = () => {
   const { pianoId } = useParams();
@@ -20,12 +20,11 @@ const Key88 = () => {
       const avg: number = await pianoListenerThreeSec(low);
       console.log(avg, "average recieved");
       // TODO need to have a way for it to know whether it should be posting or updating the UserPianoKey
-      const existingKey = userKeys?.find((key) => key.noteId === low);
+      const existingKey = userKeys?.find((key) => key.note_id - 1 === low);
       if (existingKey) {
-        console.log("bum ass");
-        // updateUserPianoKey(pianoId!, avg, notes[low]);
+        postPutUserPianoKey(pianoId!, avg, notes[low], "put");
       } else {
-        postUserPianoKey(pianoId!, avg, notes[low]);
+        postPutUserPianoKey(pianoId!, avg, notes[low], "post");
       }
     } finally {
       setLow((prevLow) => prevLow + 1);

@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { Piano } from "../Piano/getPiano";
+import type { Piano } from "../piano";
 
 export async function getUserPianos(
   userId: string,

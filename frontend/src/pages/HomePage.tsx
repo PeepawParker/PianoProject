@@ -3,7 +3,7 @@ import { getUserPianos } from "../api/Users/getUser";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { Link } from "react-router-dom";
-import type { Piano } from "../api/Piano/getPiano";
+import type { Piano } from "../api/piano";
 
 function HomePage() {
   const { userId } = useSelector((state: AppRootState) => state.user);

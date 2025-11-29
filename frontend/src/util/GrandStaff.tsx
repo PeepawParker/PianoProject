@@ -12,9 +12,10 @@ import {
 export interface UserNote {
   baseNote: string;
   isSharp: boolean;
-  noteId: number;
+  note_id: number;
 }
 
+// TODO make it so that the range notes are stagnant but the current note is like red and moves to indicate the current note being mapped
 // TODO make the notes live update as the user submits new frequencies to the database
 // TODO allow users to update note values
 
@@ -103,6 +104,17 @@ export default function GrandStaff({
     // Correctly structure this
     if (userKeys) {
       for (const userKey of userKeys) {
+        // used to offset the userKeys from the range keys
+        const spacer = new StaveNote({
+          keys: ["b/4"],
+          duration: "qr",
+          clef: "bass",
+        });
+        spacer.setStyle({
+          fillStyle: "transparent",
+          strokeStyle: "transparent",
+        });
+
         const note = new StaveNote({
           keys: [userKey.baseNote],
           duration: "q",
@@ -113,8 +125,8 @@ export default function GrandStaff({
         }
         note.setStyle({ fillStyle: "green", strokeStyle: "green" });
 
-        const userVoice = new Voice({ numBeats: 1, beatValue: 4 });
-        userVoice.addTickables([note]);
+        const userVoice = new Voice({ numBeats: 2, beatValue: 4 }); // double the beats
+        userVoice.addTickables([spacer, note]);
         new Formatter().joinVoices([userVoice]).format([userVoice], 400);
         userVoice.draw(context, bassStave);
       }

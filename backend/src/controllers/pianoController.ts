@@ -36,5 +36,40 @@ export async function postKeyFrequency(
     // TODO send error
   }
 
-  res.status(200);
+  const userPianoKeys = await pianoModel.getMappedKeysByPianoId(+pianoId);
+
+  res.status(200).json({
+    status: "success",
+    userPianoKeys,
+  });
+}
+
+export async function putKeyFrequency(
+  req: Request,
+  res: Response
+): Promise<void> {
+  const {
+    pianoId,
+    frequency,
+    currentNote,
+  }: {
+    pianoId: string;
+    frequency: number;
+    currentNote: string;
+  } = req.body;
+
+  const note = await pianoModel.getNoteFromString(currentNote);
+
+  if (note) {
+    await pianoModel.putPianoKey(+pianoId, frequency, note);
+  } else {
+    // TODO send error
+  }
+
+  const userPianoKeys = await pianoModel.getMappedKeysByPianoId(+pianoId);
+
+  res.status(200).json({
+    status: "success",
+    userPianoKeys,
+  });
 }
