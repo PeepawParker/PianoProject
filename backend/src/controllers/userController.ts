@@ -22,4 +22,9 @@ export async function getUserPianoKeys(
   const pianoId: number = parseInt(req.params.pianoId!, 10);
 
   const userPianoKeys = await pianoModel.getMappedKeysByPianoId(pianoId);
+
+  res.status(200).json({
+    status: "success",
+    userPianoKeys,
+  });
 }

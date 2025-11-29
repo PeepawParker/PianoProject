@@ -22,6 +22,5 @@ export async function getUserMappedKeys(
   const response = await axios.get(
     `http://localhost:3000/api/users/piano/${userId}/${pianoId}`
   );
-  console.log("Here are the user mapped keys: ", response.data);
-  // setUserKeys(response.data);
+  setUserKeys(response.data.userPianoKeys);
 }

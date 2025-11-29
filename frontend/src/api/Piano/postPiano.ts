@@ -5,13 +5,11 @@ export async function postUserPiano(
   numKeys: number,
   userId: string
 ) {
-  const response = await axios.post(
+  await axios.post(
     `http://localhost:3000/api/piano/setup`,
     { pianoName, numKeys, userId },
     { withCredentials: true }
   );
-
-  console.log(response.data);
 }
 
 export async function postUserPianoKey(
@@ -19,11 +17,9 @@ export async function postUserPianoKey(
   frequency: number,
   currentNote: string
 ) {
-  const response = await axios.post(
+  await axios.post(
     `http://localhost:3000/api/piano/setup/key`,
     { pianoId, frequency, currentNote },
     { withCredentials: true }
   );
-
-  console.log(response.data);
 }

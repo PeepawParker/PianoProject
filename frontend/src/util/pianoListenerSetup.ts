@@ -39,7 +39,6 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
         });
 
         if (newFrequencies.length <= 20) {
-          console.log("This aint even a piano gang pack it up");
           // TODO have it somehow distinguish the background from the piano to map the values anyways even if they are not close to what the sounds should be
           average = 0;
         } else {
@@ -49,12 +48,6 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
           average = total / newFrequencies.length;
         }
 
-        console.log("recording finished");
-        console.log(frequencies);
-        console.log(`Here was the average that was produced: ${average}`);
-        console.log(
-          `Here was the expected frequency ${frequenciesList[index]}`
-        );
         resolve(average);
       }, 3000);
     });

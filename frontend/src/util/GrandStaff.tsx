@@ -8,9 +8,9 @@ import {
   Voice,
   Formatter,
 } from "vexflow";
+import { notes } from "./notes88";
 import type { PianoKey } from "../api/Piano/getPiano";
 
-// TODO make the notes land 1 bar lower for all of them
 // TODO fix the issue where the accidental stays on the note
 // Then make it so you can submit this and it adds the notes that have been mapped so far as it listens to the piano
 
@@ -33,8 +33,6 @@ export default function GrandStaff({
   userKeys,
 }: GrandStaffProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-
-  console.log(`here is the lowNoteValue ${lowNoteValue}`);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -92,6 +90,16 @@ export default function GrandStaff({
     });
     if (lowIsSharp) {
       lowNote.addModifier(new Accidental("#"), 0);
+    }
+
+    // Correctly structure this
+    if (userKeys) {
+      for (const userKey of userKeys) {
+        console.log(
+          "Hello this should print the already defined notes here: ",
+          notes[userKey.note_id - 1]
+        );
+      }
     }
 
     const bassVoice = new Voice({ numBeats: 1, beatValue: 4 });

@@ -8,6 +8,5 @@ export async function getUserPianos(
   const response = await axios.get(
     `http://localhost:3000/api/users/piano/${userId}`
   );
-  console.log("Here are the user pianos: ", response.data.userPianos);
   setUserPianos(response.data.userPianos);
 }
