@@ -42,8 +42,7 @@ export default function PianoRange({
   const lowParsed = parseNotes(values[low]);
 
   useEffect(() => {
-    if (userId && pianoId)
-      getUserMappedKeys(+userId, +pianoId, setUserKeys, parseNotes);
+    if (userId && pianoId) getUserMappedKeys(userId, pianoId, setUserKeys);
   }, [pianoId, setUserKeys, userId]);
 
   return (

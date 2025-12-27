@@ -22,7 +22,7 @@ function HomePage() {
           {userPianos
             ? userPianos.map((piano) => (
                 <p>
-                  <Link key={piano.id} to={`/PianoHomePage/${piano.id}`}>
+                  <Link key={piano.id} to={`/PianoHome/${piano.id}`}>
                     {piano.piano_name}
                   </Link>
                 </p>

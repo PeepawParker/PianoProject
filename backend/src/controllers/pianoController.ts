@@ -59,14 +59,11 @@ export async function putKeyFrequency(
 
   if (note) {
     await pianoModel.putPianoKey(+pianoId, frequency, note);
+
+    res.status(200).json({
+      status: "success",
+    });
   } else {
     // TODO send error
   }
-
-  const userPianoKeys = await pianoModel.getMappedKeysByPianoId(+pianoId);
-
-  res.status(200).json({
-    status: "success",
-    userPianoKeys,
-  });
 }

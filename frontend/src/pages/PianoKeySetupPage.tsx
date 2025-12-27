@@ -4,6 +4,8 @@ function PianoKeySetupPage() {
   // Im going to need to get specifics of the piano like the number of keys that way I can create a layout of that piano for the user to map to their personal piano.
   // I should also have an option for keyboard that doesnt require this because their tuning should be the same no matter what
 
+  // TODO make it so that the piano frequencies are the default values to egin with, but specif that if the users piano is out of tune that they can alter these frequencies to match with the frequencies of their piano
+
   return (
     <>
       <p>Piano key setup</p>

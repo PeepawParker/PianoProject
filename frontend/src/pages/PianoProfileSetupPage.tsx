@@ -31,7 +31,7 @@ function PianoProfileSetupPage() {
             <button
               onClick={async () => {
                 const pianoId = await postUserPiano(pianoName, numKeys, userId);
-                navigate(`/PianoHomePage/${pianoId}`);
+                navigate(`/PianoHome/${pianoId}`);
               }}
             >
               Submit

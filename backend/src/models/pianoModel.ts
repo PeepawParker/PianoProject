@@ -132,7 +132,7 @@ export async function putPianoKey(
 ) {
   const client = await pool.connect();
   try {
-    await client.query(
+    const result = await client.query<PianoKey>(
       `
       UPDATE user_keys
       SET frequency = $1

@@ -1,9 +1,10 @@
 import axios, { type AxiosResponse } from "axios";
 import { notes } from "../util/notes88";
 import type { UserNote } from "../util/GrandStaff";
-import type { Note } from "../util/PianoRange";
 import parseNotes from "../util/parseNotes";
 import type { Dispatch, SetStateAction } from "react";
+
+// TODO fix these so that instead of having the api requests also alter the react states it returns the values where the react component will then update the states
 
 export interface Piano {
   id: number;
@@ -32,10 +33,9 @@ interface UserMappedKeysResponse {
 }
 
 export async function getUserMappedKeys(
-  userId: number,
-  pianoId: number,
-  setUserKeys: (keys: UserNote[]) => void,
-  parseNotes: (note: string) => Note
+  userId: string,
+  pianoId: string,
+  setUserKeys: (keys: UserNote[]) => void
 ) {
   const response = await axios.get<UserMappedKeysResponse>(
     `http://localhost:3000/api/users/piano/${userId}/${pianoId}`
@@ -93,14 +93,11 @@ export async function postPutUserPianoKey(
     };
     setUserKeys((prevKeys) => [...prevKeys, newNote]);
   } else {
-    console.log("this is put");
-    response = await axios.put(
+    await axios.put(
       `http://localhost:3000/api/piano/setup/key`,
       { pianoId, frequency, currentNote },
       { withCredentials: true }
     );
-    console.log("here is the response: ", response);
+    // Nothing needs to happen here because the updated value that gets returned would look no different from the original value and we don't need the frequency or anything at this point on the frontend so no reason to overcomplicate it
   }
-
-  console.log(response);
 }

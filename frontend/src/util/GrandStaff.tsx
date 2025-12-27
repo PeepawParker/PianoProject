@@ -15,10 +15,6 @@ export interface UserNote {
   note_id: number;
 }
 
-// TODO make it so that the range notes are stagnant but the current note is like red and moves to indicate the current note being mapped
-// TODO make the notes live update as the user submits new frequencies to the database
-// TODO allow users to update note values
-
 interface GrandStaffProps {
   highNoteValue: string;
   highIsSharp: boolean;
