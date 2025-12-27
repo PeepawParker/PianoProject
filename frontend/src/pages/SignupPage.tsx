@@ -43,9 +43,10 @@ function SignupPage() {
         />
       </div>
       <button
-        onClick={() =>
-          signup(username, email, password, passwordConfirm, dispatch)
-        }
+        onClick={() => {
+          signup(username, email, password, passwordConfirm, dispatch);
+          window.location.href = "/";
+        }}
       >
         Submit
       </button>

@@ -10,24 +10,27 @@ const Key88 = () => {
   const { pianoId } = useParams();
   const [listening, setListening] = useState<boolean>(false);
   const [readyToListen, setReadyToListen] = useState<boolean>(false);
-  const [low, setLow] = useState<number>(19);
-  const [high, setHigh] = useState<number>(56);
-  const [userKeys, setUserKeys] = useState<UserNote[] | undefined>(undefined);
+  const [current, setCurrent] = useState<number>(19);
+  const high: number = 87;
+  const low: number = 0;
+  const [userKeys, setUserKeys] = useState<UserNote[]>([]);
 
   const handleClick = async () => {
     setListening(true);
     try {
-      const avg: number = await pianoListenerThreeSec(low);
+      const avg: number = await pianoListenerThreeSec(current);
       console.log(avg, "average recieved");
       // TODO need to have a way for it to know whether it should be posting or updating the UserPianoKey
-      const existingKey = userKeys?.find((key) => key.note_id - 1 === low);
+      const existingKey = userKeys?.find((key) => key.note_id - 1 === current);
+      console.log(userKeys);
+      console.log("Does it exist: ", existingKey);
       if (existingKey) {
-        postPutUserPianoKey(pianoId!, avg, notes[low], "put");
+        postPutUserPianoKey(pianoId!, avg, notes[current], "put", setUserKeys);
       } else {
-        postPutUserPianoKey(pianoId!, avg, notes[low], "post");
+        postPutUserPianoKey(pianoId!, avg, notes[current], "post", setUserKeys);
       }
     } finally {
-      setLow((prevLow) => prevLow + 1);
+      setCurrent((prevCurrent) => prevCurrent + 1);
       setListening(false);
     }
   };
@@ -43,10 +46,10 @@ const Key88 = () => {
       <PianoRange
         values={notes}
         numKeys={88}
-        low={low}
+        current={current}
         high={high}
-        setHigh={setHigh}
-        setLow={setLow}
+        low={low}
+        setCurrent={setCurrent}
         readyToListen={readyToListen}
         userKeys={userKeys}
         setUserKeys={setUserKeys}
@@ -54,8 +57,7 @@ const Key88 = () => {
 
       {readyToListen ? (
         <div>
-          <p>Number of keys left to map {high - low} </p>{" "}
-          <p>Currently Listening to {notes[low]} </p>
+          <p>Currently Listening to {notes[current]} </p>
         </div>
       ) : null}
       <div>

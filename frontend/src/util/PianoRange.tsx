@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import GrandStaff, { type UserNote } from "./GrandStaff";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
@@ -15,9 +15,9 @@ interface PianoRangeProps {
   values: string[];
   numKeys: number;
   high: number;
-  setHigh: (num: number) => void;
   low: number;
-  setLow: (num: number) => void;
+  current: number;
+  setCurrent: (num: number) => void;
   readyToListen: boolean;
   userKeys: UserNote[] | undefined;
   setUserKeys: (keys: UserNote[]) => void;
@@ -28,8 +28,8 @@ export default function PianoRange({
   numKeys,
   high,
   low,
-  setHigh,
-  setLow,
+  current,
+  setCurrent,
   readyToListen,
   userKeys,
   setUserKeys,
@@ -37,24 +37,9 @@ export default function PianoRange({
   const { userId } = useSelector((state: AppRootState) => state.user);
   const { pianoId } = useParams();
 
-  const [lowParsed, setLowParsed] = useState<Note>({
-    baseNote: "E/2",
-    isSharp: false,
-  });
-  const [highParsed, setHighParsed] = useState<Note>({
-    baseNote: "F/5",
-    isSharp: false,
-  });
-
-  const handleLowChange = (num: number) => {
-    setLow(num);
-    setLowParsed(parseNotes(values[num]));
-  };
-
-  const handleHighChange = (num: number) => {
-    setHigh(num);
-    setHighParsed(parseNotes(values[num]));
-  };
+  const currentParsed = parseNotes(values[current]);
+  const highParsed = parseNotes(values[high]);
+  const lowParsed = parseNotes(values[low]);
 
   useEffect(() => {
     if (userId && pianoId)
@@ -63,33 +48,30 @@ export default function PianoRange({
 
   return (
     <>
-      <GrandStaff
-        highNoteValue={highParsed.baseNote}
-        highIsSharp={highParsed?.isSharp}
-        lowNoteValue={lowParsed.baseNote}
-        lowIsSharp={lowParsed?.isSharp}
-        userKeys={userKeys}
-      />
+      <div>
+        <GrandStaff
+          highNoteValue={highParsed.baseNote}
+          highIsSharp={highParsed?.isSharp}
+          lowNoteValue={lowParsed.baseNote}
+          lowIsSharp={lowParsed?.isSharp}
+          currentNoteValue={currentParsed.baseNote}
+          currentNoteIsSharp={currentParsed?.isSharp}
+          userKeys={userKeys}
+        />
+      </div>
       <p>
-        {values[low]} to {values[high]}
+        {values[current]} to {values[high]}
       </p>
       {readyToListen ? null : (
         <div>
+          <p>Current Note Index</p>
           <input
             type="number"
             min={0}
             max={numKeys - 1}
             step={1}
-            value={low}
-            onChange={(e) => handleLowChange(+e.target.value)}
-          />
-          <input
-            type="number"
-            min={0}
-            max={numKeys - 1}
-            step={1}
-            value={high}
-            onChange={(e) => handleHighChange(+e.target.value)}
+            value={current}
+            onChange={(e) => setCurrent(+e.target.value)}
           />
         </div>
       )}

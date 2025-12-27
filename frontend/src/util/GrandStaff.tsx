@@ -21,9 +21,11 @@ export interface UserNote {
 
 interface GrandStaffProps {
   highNoteValue: string;
-  lowNoteValue: string;
   highIsSharp: boolean;
+  lowNoteValue: string;
   lowIsSharp: boolean;
+  currentNoteValue: string;
+  currentNoteIsSharp: boolean;
   userKeys: UserNote[] | undefined;
 }
 
@@ -31,9 +33,11 @@ interface GrandStaffProps {
 
 export default function GrandStaff({
   highNoteValue,
-  lowNoteValue,
   highIsSharp,
+  lowNoteValue,
   lowIsSharp,
+  currentNoteValue,
+  currentNoteIsSharp,
   userKeys,
 }: GrandStaffProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,7 +49,7 @@ export default function GrandStaff({
     containerRef.current.innerHTML = "";
 
     const vf = new Renderer(containerRef.current, Renderer.Backends.SVG);
-    vf.resize(500, 300);
+    vf.resize(500, 400);
     const context = vf.getContext();
 
     const trebleStave = new Stave(10, 70, 480);
@@ -71,34 +75,50 @@ export default function GrandStaff({
       .setContext(context)
       .draw();
 
-    // High note on treble staff
+    // Highest possible note on treble staff
     const highNote = new StaveNote({
       keys: [highNoteValue],
-      duration: "q",
+      duration: "w",
       clef: "treble",
     });
     if (highIsSharp) {
       highNote.addModifier(new Accidental("#"), 0);
     }
 
-    const trebleVoice = new Voice({ numBeats: 1, beatValue: 4 });
-    trebleVoice.addTickables([highNote]);
-    new Formatter().joinVoices([trebleVoice]).format([trebleVoice], 400);
-    trebleVoice.draw(context, trebleStave);
-
-    // Low note on bass staff
     const lowNote = new StaveNote({
       keys: [lowNoteValue],
-      duration: "q",
-      clef: "bass",
+      duration: "w",
+      clef: "treble",
     });
     if (lowIsSharp) {
       lowNote.addModifier(new Accidental("#"), 0);
     }
 
-    const bassVoice = new Voice({ numBeats: 1, beatValue: 4 });
-    bassVoice.addTickables([lowNote]);
+    const lowVoice = new Voice({ numBeats: 4, beatValue: 4 });
+    lowVoice.addTickables([lowNote]);
+
+    const trebleVoice = new Voice({ numBeats: 4, beatValue: 4 });
+    trebleVoice.addTickables([highNote]);
+    new Formatter()
+      .joinVoices([trebleVoice, lowVoice])
+      .format([trebleVoice, lowVoice], 400);
+    trebleVoice.draw(context, trebleStave);
+    lowVoice.draw(context, trebleStave);
+
+    // Low note on bass staff
+    const currentNote = new StaveNote({
+      keys: [currentNoteValue],
+      duration: "w",
+      clef: "bass",
+    });
+    if (currentNoteIsSharp) {
+      currentNote.addModifier(new Accidental("#"), 0);
+    }
+
+    const bassVoice = new Voice({ numBeats: 4, beatValue: 4 });
+    bassVoice.addTickables([currentNote]);
     new Formatter().joinVoices([bassVoice]).format([bassVoice], 400);
+    currentNote.setStyle({ fillStyle: "red", strokeStyle: "red" });
     bassVoice.draw(context, bassStave);
 
     // Correctly structure this
@@ -107,7 +127,7 @@ export default function GrandStaff({
         // used to offset the userKeys from the range keys
         const spacer = new StaveNote({
           keys: ["b/4"],
-          duration: "qr",
+          duration: "w",
           clef: "bass",
         });
         spacer.setStyle({
@@ -115,23 +135,29 @@ export default function GrandStaff({
           strokeStyle: "transparent",
         });
 
-        const note = new StaveNote({
+        const finishedNote = new StaveNote({
           keys: [userKey.baseNote],
-          duration: "q",
+          duration: "w",
           clef: "bass",
         });
         if (userKey.isSharp) {
-          note.addModifier(new Accidental("#"), 0);
+          finishedNote.addModifier(new Accidental("#"), 0);
         }
-        note.setStyle({ fillStyle: "green", strokeStyle: "green" });
+        finishedNote.setStyle({ fillStyle: "green", strokeStyle: "green" });
 
-        const userVoice = new Voice({ numBeats: 2, beatValue: 4 }); // double the beats
-        userVoice.addTickables([spacer, note]);
+        const userVoice = new Voice({ numBeats: 8, beatValue: 4 }); // double the beats
+        userVoice.addTickables([spacer, finishedNote]);
         new Formatter().joinVoices([userVoice]).format([userVoice], 400);
         userVoice.draw(context, bassStave);
       }
     }
-  }, [highNoteValue, lowNoteValue, lowIsSharp, highIsSharp, userKeys]);
+  }, [
+    highNoteValue,
+    currentNoteValue,
+    currentNoteIsSharp,
+    highIsSharp,
+    userKeys,
+  ]);
 
   // Creates the ref
   return <div ref={containerRef} style={{ marginTop: "50px" }}></div>;

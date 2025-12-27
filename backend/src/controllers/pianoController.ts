@@ -31,17 +31,14 @@ export async function postKeyFrequency(
 
   const note = await pianoModel.getNoteFromString(currentNote);
   if (note) {
-    await pianoModel.postPianoKey(+pianoId, frequency, note);
+    const pianoKey = await pianoModel.postPianoKey(+pianoId, frequency, note);
+    res.status(200).json({
+      status: "success",
+      pianoKey,
+    });
   } else {
     // TODO send error
   }
-
-  const userPianoKeys = await pianoModel.getMappedKeysByPianoId(+pianoId);
-
-  res.status(200).json({
-    status: "success",
-    userPianoKeys,
-  });
 }
 
 export async function putKeyFrequency(

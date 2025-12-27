@@ -113,11 +113,13 @@ export async function postPianoKey(
 ) {
   const client = await pool.connect();
   try {
-    await client.query(
+    const result = await client.query<PianoKey>(
       `INSERT INTO user_keys (piano_id, note_id, frequency) 
-      VALUES ($1, $2, $3)`,
+      VALUES ($1, $2, $3)
+      RETURNING *`,
       [pianoId, note.id, frequency]
     );
+    return result.rows[0];
   } finally {
     client.release();
   }

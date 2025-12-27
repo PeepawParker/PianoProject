@@ -21,9 +21,11 @@ function HomePage() {
           <h1>Home Page</h1>
           {userPianos
             ? userPianos.map((piano) => (
-                <Link key={piano.id} to={`/PianoHomePage/${piano.id}`}>
-                  {piano.piano_name}
-                </Link>
+                <p>
+                  <Link key={piano.id} to={`/PianoHomePage/${piano.id}`}>
+                    {piano.piano_name}
+                  </Link>
+                </p>
               ))
             : "Loading"}
         </div>

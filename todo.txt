@@ -1,3 +1,12 @@
+Tomorrow TODO:
+    Make the userKeys array update when you put/post a new key
+
+    Make a back / forward button for the note listener rather than a retry 
+
+    Make the range notes set to max and then have the curNote be a different color that tracks what the curr note being listened to is
+
+    Start on the actual note practice tool
+
 Start on the measuring of a sounds frequency to then store in the database,
 Each piano should have its own profile of keys mapped to the frequencies specified,
 User should first specify how many keys, and piano name. This Piano in the database will then be linked to the Piano Keys database which will hold the frequencies of each of the notes that the user has in there. I might make it like one long text string and force the user to complete all the notes before they are allowed to play

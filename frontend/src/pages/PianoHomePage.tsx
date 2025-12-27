@@ -5,7 +5,12 @@ export default function PianoHomePage() {
   return (
     <>
       <h1>This is the piano home page</h1>
-      <Link to={`/pianoKeySetup/${pianoId}`}>Piano Key Setup</Link>
+      <p>
+        <Link to={`/pianoKeySetup/${pianoId}`}>Piano Key Setup</Link>
+      </p>
+      <p>
+        <Link to={`/pianoPractice/${pianoId}`}>Piano Practice</Link>
+      </p>
     </>
   );
 }
