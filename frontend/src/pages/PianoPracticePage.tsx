@@ -1,11 +1,10 @@
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import GrandStaffPractice from "../util/GrandStaffPractice";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { UserNote } from "../util/GrandStaff";
 import { getUserMappedKeys } from "../api/piano";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
-import parseNotes from "../util/parseNotes";
 import { pianoLiveListener } from "../util/pianoListenerSetup";
 
 export default function PianoPracticePage() {
@@ -16,6 +15,7 @@ export default function PianoPracticePage() {
   const [randomKey, setRandomKey] = useState<UserNote>();
   const [start, setStart] = useState<boolean>(false);
   const [correct, setCorrect] = useState<boolean | null>(null);
+  const stopListenerRef = useRef<(() => void) | null>(null);
 
   function randomNote(userKeys: UserNote[]) {
     const max = userKeys.length;
@@ -35,9 +35,16 @@ export default function PianoPracticePage() {
 
   useEffect(() => {
     if (start && randomKey) {
-      pianoLiveListener();
+      // make randomKey include the frequency or just an array of the frequencies
+      pianoLiveListener(randomKey.frequency, setCorrect).then((stop) => {
+        stopListenerRef.current = stop; // After the listener is setup both functions return recursively calling the detect function until you call the stop function
+      });
+    } else {
+      stopListenerRef.current?.();
+      stopListenerRef.current = null;
     }
-    // Make sure that the listener stops running when these requirements aren't met
+
+    return () => stopListenerRef.current?.();
   }, [randomKey, start]);
 
   useEffect(() => {

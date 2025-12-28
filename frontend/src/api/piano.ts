@@ -47,6 +47,7 @@ export async function getUserMappedKeys(
     return {
       ...note,
       note_id: key.note_id,
+      frequency: key.frequency,
     };
   });
   setUserKeys(parsedKeys);

@@ -13,6 +13,7 @@ export interface UserNote {
   baseNote: string;
   isSharp: boolean;
   note_id: number;
+  frequency: number;
 }
 
 interface GrandStaffProps {

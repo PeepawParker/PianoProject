@@ -26,6 +26,10 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
       // Stops detect after 3 seconds
       setTimeout(() => {
         stop();
+        console.log(
+          "we got in here here are the frequencies we got: ",
+          frequencies
+        );
         const newFrequencies: number[] = [];
         let total: number = 0;
         let average: number;
@@ -58,22 +62,27 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
 
 // This function will live listen to the frequencies that are being transmitted through the users mic. If at any point they are within the range that the program deems worthy it will mark the note as correct and then move onto the next random note within the users note selection
 
-export function pianoLiveListener(
-  frequencies: number[],
-  setCorrect: (correct: boolean) => void,
-  start: boolean
-) {
-  pianoListenerSetup(frequencies, setCorrect).then(({ stop }) => {
-    if (start === false) {
-      stop();
+export async function pianoLiveListener(
+  keyFrequency: number,
+  setCorrect: (correct: boolean) => void
+): Promise<() => void> {
+  const { stop } = await pianoListenerSetup([], (pitch) => {
+    const frequency = parseFloat(pitch.toFixed(2));
+    if (
+      frequency >= keyFrequency - keyFrequency * 0.01 &&
+      frequency <= keyFrequency + keyFrequency * 0.01
+    ) {
+      console.log("the correct note was played good job");
+      setCorrect(true);
     }
-
-    // listen to the current frequency set correct to true if it is within the correct range
   });
+
+  return stop;
 }
 
 async function pianoListenerSetup(
-  frequencies: number[]
+  frequencies: number[],
+  pitchCorrectness?: (pitch: number) => void
 ): Promise<PianoListenerSetupReturn> {
   // audio processing workspace
   const audioCtx = new AudioContext();
@@ -107,8 +116,13 @@ async function pianoListenerSetup(
     const [pitch, clarity] = detector.findPitch(buffer, audioCtx.sampleRate);
 
     // adds frequency to array if its clear enough, and over 22 Hz (background noise)
+
     if (pitch && clarity > 0.9 && pitch > 22) {
-      frequencies.push(parseFloat(pitch.toFixed(2)));
+      if (!pitchCorrectness) {
+        frequencies.push(parseFloat(pitch.toFixed(2)));
+      } else if (pitchCorrectness) {
+        pitchCorrectness(pitch);
+      }
     }
 
     // Makes this function run (whatever their monitor refresh rate is) per second
