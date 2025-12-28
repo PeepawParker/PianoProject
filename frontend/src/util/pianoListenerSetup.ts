@@ -129,10 +129,12 @@ async function pianoListenerSetup(
     requestAnimationFrame(() => detect(frequencies));
   }
 
+  // detect will initially run one time
   detect(frequencies);
 
-  // Returns a stop object to control when the detect loop should end.
-  // This exits the pianoListenerSetup() but the detect function continues running on its own until this stop function is called making running = false
+  // After this initial call it will return the stop function
+  // requestAnimationFrame(() => detect(frequencies)); is a non blocking function that will continue to schedult detect calls until we set running to false which will cause it to return
+  // request animation frame schedules calls to the designated function one time per available frame
   return {
     stop: () => {
       running = false;
