@@ -153,6 +153,8 @@ export default function GrandStaff({
     currentNoteIsSharp,
     highIsSharp,
     userKeys,
+    lowNoteValue,
+    lowIsSharp,
   ]);
 
   // Creates the ref

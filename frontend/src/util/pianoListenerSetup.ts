@@ -17,6 +17,8 @@ const frequenciesList: number[] = [
 // Simply asks the user if they can use their mic, if they allow then it takes in sounds if the sound passes a clarity score it can be good enough to be used
 
 // returns a promise so that you can't press the button while its currently running
+
+// TODO have it show the user what the current frequency being measured is so that they can confirm that the frequency is correct before inputting it into the DB
 export function pianoListenerThreeSec(index: number): Promise<number> {
   return new Promise((resolve) => {
     const frequencies: number[] = [];
@@ -51,6 +53,22 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
         resolve(average);
       }, 3000);
     });
+  });
+}
+
+// This function will live listen to the frequencies that are being transmitted through the users mic. If at any point they are within the range that the program deems worthy it will mark the note as correct and then move onto the next random note within the users note selection
+
+export function pianoLiveListener(
+  frequencies: number[],
+  setCorrect: (correct: boolean) => void,
+  start: boolean
+) {
+  pianoListenerSetup(frequencies, setCorrect).then(({ stop }) => {
+    if (start === false) {
+      stop();
+    }
+
+    // listen to the current frequency set correct to true if it is within the correct range
   });
 }
 

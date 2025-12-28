@@ -8,19 +8,16 @@ import {
   Voice,
   Formatter,
 } from "vexflow";
-import type { UserNote } from "./GrandStaff";
 
 interface GrandStaffPracticeProps {
   currentNoteValue: string;
   currentNoteIsSharp: boolean;
-  range: UserNote[];
   correct: boolean | null;
 }
 
 export default function GrandStaffPractice({
   currentNoteValue,
   currentNoteIsSharp,
-  range, // Used to determine what staves should be displayed based on what notes the user is working on
   correct,
 }: GrandStaffPracticeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -79,5 +76,7 @@ export default function GrandStaffPractice({
     });
 
     trebleVoice.draw(context, trebleStave);
-  });
+  }, [correct, currentNoteIsSharp, currentNoteValue]);
+
+  return <div ref={containerRef} style={{ marginTop: "50px" }}></div>;
 }
