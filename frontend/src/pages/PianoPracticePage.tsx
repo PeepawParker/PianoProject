@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
-import GrandStaffPractice from "../util/GrandStaffPractice";
+import GrandStaffPractice from "../util/GrandStaves/GrandStaffPractice";
 import { useEffect, useRef, useState } from "react";
-import type { UserNote } from "../util/GrandStaff";
+import type { UserNote } from "../util/GrandStaves/GrandStaff";
 import { getUserMappedKeys } from "../api/piano";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
@@ -9,6 +9,8 @@ import { pianoLiveListener } from "../util/pianoListenerSetup";
 
 export default function PianoPracticePage() {
   // Todo add a like left / right hand mode wheere you practice 2 hands at once with it displaying notes in the treble and bass cleff 2 notes at the same time
+
+  // TODO have a correct and incorrect counter along with like time elapsed for the current session
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
   const [userKeys, setUserKeys] = useState<UserNote[]>([]);
@@ -26,6 +28,7 @@ export default function PianoPracticePage() {
   }
 
   // TODO make the user select the range of notes they would like to practice along with sharps or no sharps before allowing them to start the practice
+  // After doing this I just want you to make some quality of life changes so that the website runs atleast kinda decent and you don't need to remember the website in order to navigate it
 
   useEffect(() => {
     if (!userId || !pianoId) return;
@@ -77,7 +80,10 @@ export default function PianoPracticePage() {
           />
         </div>
       ) : (
-        <></>
+        <div>
+          {/* This is going to be where the user selects the range of notes they want to practice */}
+          {/* <GrandStaffRange /> */}
+        </div>
       )}
     </>
   );

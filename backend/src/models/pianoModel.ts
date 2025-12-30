@@ -1,4 +1,5 @@
 import pool from "../database";
+import { noteFrequencies, notes } from "../utils/notes88";
 
 export interface Piano {
   id: number;
@@ -122,6 +123,27 @@ export async function postPianoKey(
     return result.rows[0];
   } finally {
     client.release();
+  }
+}
+
+export async function postDefaultKeys(pianoId: number) {
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
+
+    for (let i = 0; i < notes.length; i++) {
+      await client.query(
+        `INSERT INTO user_keys (piano_id, note_id, frequency)
+         VALUES ($1, $2, $3)`,
+        [pianoId, i + 1, noteFrequencies[notes[i]!]]
+      );
+    }
+
+    await client.query("COMMIT");
+  } catch (err) {
+    await client.query("ROLLBACK");
+    throw err;
+  } finally {
   }
 }
 

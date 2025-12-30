@@ -8,6 +8,7 @@ export async function setup(req: Request, res: Response): Promise<void> {
   const userId: number = req.body.userId;
 
   const piano: Piano = await pianoModel.postPiano(pianoName, numKeys, userId);
+  await pianoModel.postDefaultKeys(piano.id);
 
   res.status(200).json({
     status: "success",

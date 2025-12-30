@@ -3,7 +3,7 @@ import { pianoListenerThreeSec } from "../../util/pianoListenerSetup";
 import PianoRange from "../../util/PianoRange";
 import { useParams } from "react-router-dom";
 import { notes } from "../../util/notes88";
-import type { UserNote } from "../../util/GrandStaff";
+import type { UserNote } from "../../util/GrandStaves/GrandStaff";
 import { postPutUserPianoKey } from "../../api/piano";
 
 const Key88 = () => {

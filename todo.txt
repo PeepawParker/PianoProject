@@ -1,9 +1,6 @@
 Tomorrow TODO:
-    Make the userKeys array update when you put/post a new key
 
     Make a back / forward button for the note listener rather than a retry 
-
-    Make the range notes set to max and then have the curNote be a different color that tracks what the curr note being listened to is
 
     Start on the actual note practice tool
 
@@ -18,3 +15,5 @@ Start on the piano key tune setup page figure out how you are going to measure t
 Eventually make it so that the range the listener accepts changes based on the current note its listening for
 
 Move the GrandStaff and PianoRange into folders and sort all teh ther pages into their own folders as necessary
+
+Make it so the userKeys are initially automatically set to the perfect tuning and then from here if their piano is out of tune they can remap the sounds manually to what the frequencies should be

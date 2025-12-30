@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import GrandStaff, { type UserNote } from "./GrandStaff";
+import GrandStaff, { type UserNote } from "./GrandStaves/GrandStaff";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { useParams } from "react-router-dom";

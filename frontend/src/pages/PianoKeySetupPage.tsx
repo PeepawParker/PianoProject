@@ -6,9 +6,11 @@ function PianoKeySetupPage() {
 
   // TODO make it so that the piano frequencies are the default values to egin with, but specif that if the users piano is out of tune that they can alter these frequencies to match with the frequencies of their piano
 
+  // TODO offset the sharps from the standard notes so that a user can click on them to remap rather than the dumb up and down stuff we have right now
+
   return (
     <>
-      <p>Piano key setup</p>
+      <p>Piano Key Remap</p>
       <Key88 />
     </>
   );

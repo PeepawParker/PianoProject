@@ -1,6 +1,6 @@
 import axios, { type AxiosResponse } from "axios";
 import { notes } from "../util/notes88";
-import type { UserNote } from "../util/GrandStaff";
+import type { UserNote } from "../util/GrandStaves/GrandStaff";
 import parseNotes from "../util/parseNotes";
 import type { Dispatch, SetStateAction } from "react";
 
@@ -91,6 +91,7 @@ export async function postPutUserPianoKey(
     const newNote: UserNote = {
       ...parsedNote,
       note_id: response.data.pianoKey.id,
+      frequency: response.data.pianoKey.frequency,
     };
     setUserKeys((prevKeys) => [...prevKeys, newNote]);
   } else {
