@@ -2,6 +2,7 @@ import { useState } from "react";
 import { signup } from "../api/Users/auth";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../stores/store";
+import { useNavigate } from "react-router-dom";
 
 function SignupPage() {
   const [username, setUsername] = useState<string>("");
@@ -9,6 +10,7 @@ function SignupPage() {
   const [password, setPassword] = useState<string>("");
   const [passwordConfirm, setPasswordConfirm] = useState<string>("");
   const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
 
   return (
     <>
@@ -44,8 +46,14 @@ function SignupPage() {
       </div>
       <button
         onClick={() => {
-          signup(username, email, password, passwordConfirm, dispatch);
-          window.location.href = "/";
+          signup(
+            username,
+            email,
+            password,
+            passwordConfirm,
+            dispatch,
+            navigate
+          );
         }}
       >
         Submit

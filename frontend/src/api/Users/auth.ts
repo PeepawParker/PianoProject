@@ -1,6 +1,7 @@
 import axios from "axios";
 import type { AppDispatch } from "../../stores/store";
 import { userActions } from "../../stores/userStore";
+import type { NavigateFunction } from "react-router-dom";
 
 interface User {
   status: string;
@@ -18,7 +19,8 @@ export async function signup(
   email: string,
   password: string,
   passwordConfirm: string,
-  dispatch: AppDispatch
+  dispatch: AppDispatch,
+  navigate: NavigateFunction
 ) {
   try {
     const response = await axios.post<User>(
@@ -33,6 +35,8 @@ export async function signup(
         username: response.data.user.username,
       })
     );
+
+    navigate("/");
   } catch (error: unknown) {
     console.error("There was a problem logging in", error);
   }
