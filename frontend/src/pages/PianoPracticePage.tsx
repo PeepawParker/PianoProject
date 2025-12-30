@@ -56,7 +56,7 @@ export default function PianoPracticePage() {
       setTimeout(() => {
         randomNote(userKeys);
         setCorrect(null);
-      });
+      }, 1000);
     }
   }, [correct, userKeys]);
 
@@ -79,11 +79,11 @@ export default function PianoPracticePage() {
             correct={correct}
           />
         </div>
+      ) : userKeys.length > 1 ? (
+        // Get a counter from 0 to length - 1 of the userNotes start the notes on 0 and 87 and then let them adjust these nubers for it to select the range of the notes that they will use for the practice
+        <div>{/* <GrandStaffRange /> */}</div>
       ) : (
-        <div>
-          {/* This is going to be where the user selects the range of notes they want to practice */}
-          {/* <GrandStaffRange /> */}
-        </div>
+        <p>You have no notes to practice idk how but you dont bruh</p>
       )}
     </>
   );

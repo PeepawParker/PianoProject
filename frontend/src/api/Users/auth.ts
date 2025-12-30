@@ -33,8 +33,8 @@ export async function signup(
         username: response.data.user.username,
       })
     );
-  } catch (err: unknown) {
-    console.error("There was a problem logging in", err);
+  } catch (error: unknown) {
+    console.error("There was a problem logging in", error);
   }
 }
 
@@ -55,7 +55,7 @@ export async function login(
         username: response.data.user.username,
       })
     );
-  } catch (err: unknown) {
-    console.error("There was a problem logging in", err);
+  } catch (error: unknown) {
+    console.error("There was a problem logging in", error);
   }
 }
