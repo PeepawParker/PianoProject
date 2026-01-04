@@ -73,10 +73,7 @@ export async function getMappedKeysByPianoId(
       [pianoId]
     );
 
-    const pianoKeys = result.rows;
-    if (!pianoKeys) throw new Error("Failed to get keys from pianoId");
-
-    return pianoKeys;
+    return result.rows;
   } finally {
     client.release();
   }
@@ -86,7 +83,7 @@ export async function postPiano(
   pianoName: string,
   numKeys: number,
   userId: number
-): Promise<Piano> {
+): Promise<Piano | undefined> {
   const client = await pool.connect();
   try {
     const result = await client.query<Piano>(
@@ -98,10 +95,7 @@ export async function postPiano(
       [userId, pianoName, numKeys]
     );
 
-    const piano = result.rows[0];
-    if (!piano) throw new Error("Failed to insert piano");
-
-    return piano;
+    return result.rows[0];
   } finally {
     client.release();
   }
@@ -140,9 +134,10 @@ export async function postDefaultKeys(pianoId: number) {
     }
 
     await client.query("COMMIT");
-  } catch (err) {
+  } catch (error) {
     await client.query("ROLLBACK");
-    throw err;
+    // You can do a standard error throw just best not to throw new AppErrors
+    throw error;
   } finally {
   }
 }

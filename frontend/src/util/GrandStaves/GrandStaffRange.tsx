@@ -95,6 +95,36 @@ export default function GrandStaffRange({
       .format([highVoice, lowVoice], 400);
     highVoice.draw(context, trebleStave);
     lowVoice.draw(context, trebleStave);
+
+    if (userKeys) {
+      for (const userKey of userKeys) {
+        // used to offset the userKeys from the range keys
+        const spacer = new StaveNote({
+          keys: ["b/4"],
+          duration: "w",
+          clef: "bass",
+        });
+        spacer.setStyle({
+          fillStyle: "transparent",
+          strokeStyle: "transparent",
+        });
+
+        const finishedNote = new StaveNote({
+          keys: [userKey.baseNote],
+          duration: "w",
+          clef: "bass",
+        });
+        if (userKey.isSharp) {
+          finishedNote.addModifier(new Accidental("#"), 0);
+        }
+        finishedNote.setStyle({ fillStyle: "green", strokeStyle: "green" });
+
+        const userVoice = new Voice({ numBeats: 8, beatValue: 4 }); // double the beats
+        userVoice.addTickables([spacer, finishedNote]);
+        new Formatter().joinVoices([userVoice]).format([userVoice], 400);
+        userVoice.draw(context, bassStave);
+      }
+    }
   }, [highNoteValue, highIsSharp, userKeys, lowNoteValue, lowIsSharp]);
 
   // Creates the ref

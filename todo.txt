@@ -2,7 +2,10 @@ Tomorrow TODO:
 
     Make a back / forward button for the note listener rather than a retry 
 
-    Start on the actual note practice tool
+    Add a test tab where you can go through each note on your keyboard and confirm that the note is mapped to the correct key to make it easy for users to see what keys should be remapped
+
+    Have key tester where users can see which keys are out of tune and need to be remapped
+    
 
 Start on the measuring of a sounds frequency to then store in the database,
 Each piano should have its own profile of keys mapped to the frequencies specified,

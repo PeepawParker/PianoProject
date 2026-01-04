@@ -12,11 +12,11 @@ interface NewUserBody {
 
 // Confirms that the username and email are unique, and also that the password and passwordConfirm match
 // If they do it gets sent though to hash the password and upload the user to the database via next()
-export async function checkNewUserData(
+export function checkNewUserData(
   req: Request,
   res: Response,
   next: NextFunction
-): Promise<void> {
+): void {
   const { username, password, passwordConfirm, email }: NewUserBody = req.body;
 
   if (password.length < 8) {

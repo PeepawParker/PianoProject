@@ -1,11 +1,14 @@
 import { useParams } from "react-router-dom";
 import GrandStaffPractice from "../util/GrandStaves/GrandStaffPractice";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { UserNote } from "../util/GrandStaves/GrandStaff";
 import { getUserMappedKeys } from "../api/piano";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { pianoLiveListener } from "../util/pianoListenerSetup";
+import { notes } from "../util/notes88";
+import parseNotes from "../util/parseNotes";
+import GrandStaffRange from "../util/GrandStaves/GrandStaffRange";
 
 export default function PianoPracticePage() {
   // Todo add a like left / right hand mode wheere you practice 2 hands at once with it displaying notes in the treble and bass cleff 2 notes at the same time
@@ -13,21 +16,43 @@ export default function PianoPracticePage() {
   // TODO have a correct and incorrect counter along with like time elapsed for the current session
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
+
   const [userKeys, setUserKeys] = useState<UserNote[]>([]);
   const [randomKey, setRandomKey] = useState<UserNote>();
+
   const [start, setStart] = useState<boolean>(false);
   const [correct, setCorrect] = useState<boolean | null>(null);
+
+  const [includeSharps, setIncludeSharps] = useState<boolean>(true);
+  const [highNoteIndex, setHighNoteIndex] = useState<number>(0);
+  const highNote = parseNotes(notes[highNoteIndex]);
+  const [lowNoteIndex, setLowNoteIndex] = useState<number>(0);
+  const lowNote = parseNotes(notes[lowNoteIndex]);
+
   const stopListenerRef = useRef<(() => void) | null>(null);
 
-  function randomNote(userKeys: UserNote[]) {
-    const max = userKeys.length;
-    const randNum: number = Math.floor(Math.random() * max);
-    const randomKey = userKeys[randNum];
-    console.log("here is the randomKey: ", randomKey, userKeys);
-    setRandomKey(randomKey);
-  }
+  const randomNote = useCallback(
+    (userKeys: UserNote[]) => {
+      const randNum: number =
+        Math.floor(Math.random() * (highNoteIndex - lowNoteIndex + 1)) +
+        lowNoteIndex;
 
-  // TODO make the user select the range of notes they would like to practice along with sharps or no sharps before allowing them to start the practice
+      const randomKey = userKeys[randNum];
+      console.log("here is the randomKey: ", randomKey);
+      if (!includeSharps) {
+        randomKey.isSharp = false;
+      }
+      setRandomKey(randomKey);
+    },
+    [highNoteIndex, includeSharps, lowNoteIndex]
+  );
+
+  useEffect(() => {
+    if (userKeys.length > 0) {
+      setHighNoteIndex(userKeys.length - 1);
+    }
+  }, [userKeys.length]);
+
   // After doing this I just want you to make some quality of life changes so that the website runs atleast kinda decent and you don't need to remember the website in order to navigate it
 
   useEffect(() => {
@@ -58,7 +83,7 @@ export default function PianoPracticePage() {
         setCorrect(null);
       }, 1000);
     }
-  }, [correct, userKeys]);
+  }, [correct, randomNote, userKeys, highNoteIndex, lowNoteIndex]);
 
   return (
     <>
@@ -72,7 +97,6 @@ export default function PianoPracticePage() {
       </button>
       {start && randomKey ? (
         <div>
-          {/* TODO when measuring the frequency make sure there is some wiggle room that is proportionate to the note frequency, make it a percentage of the notes expected frequency */}
           <GrandStaffPractice
             currentNoteValue={randomKey.baseNote}
             currentNoteIsSharp={randomKey.isSharp}
@@ -81,7 +105,45 @@ export default function PianoPracticePage() {
         </div>
       ) : userKeys.length > 1 ? (
         // Get a counter from 0 to length - 1 of the userNotes start the notes on 0 and 87 and then let them adjust these nubers for it to select the range of the notes that they will use for the practice
-        <div>{/* <GrandStaffRange /> */}</div>
+        <div>
+          <GrandStaffRange
+            highNoteValue={highNote.baseNote}
+            highIsSharp={highNote.isSharp}
+            lowNoteValue={lowNote.baseNote}
+            lowIsSharp={lowNote.isSharp}
+            userKeys={userKeys}
+          />
+          {/* TODO: make it so users can input their own values only allow them to interact with this through the arrow buttons */}
+          <label>
+            <input
+              type="checkbox"
+              checked={includeSharps}
+              onChange={(e) => setIncludeSharps(e.target.checked)}
+            />
+            Sharps Included In Practice{" "}
+            {/* Make this update the userKeys so that it doesn't show the sharps anymore */}
+          </label>
+          <p>Highest Note allowed</p>
+          <input
+            type="number"
+            min={lowNoteIndex + 1}
+            max={userKeys.length - 1}
+            step={1}
+            value={highNoteIndex}
+            onChange={(e) => setHighNoteIndex(+e.target.value)}
+          ></input>
+
+          {/* TODO: make it so users can input their own values only allow them to interact with this through the arrow buttons */}
+          <p>Lowest Note allowed</p>
+          <input
+            type="number"
+            min={0}
+            max={highNoteIndex - 1}
+            step={1}
+            value={lowNoteIndex}
+            onChange={(e) => setLowNoteIndex(+e.target.value)}
+          ></input>
+        </div>
       ) : (
         <p>You have no notes to practice idk how but you dont bruh</p>
       )}

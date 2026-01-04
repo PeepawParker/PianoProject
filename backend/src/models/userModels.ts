@@ -8,7 +8,7 @@ export interface User {
   created_at: Date;
 }
 
-export async function getUserByEmail(email: string): Promise<User> {
+export async function getUserByEmail(email: string): Promise<User | undefined> {
   const client = await pool.connect();
   try {
     const result = await client.query<User>(
@@ -16,16 +16,15 @@ export async function getUserByEmail(email: string): Promise<User> {
       [email.toLowerCase()]
     );
 
-    const user = result.rows[0];
-    if (!user) throw new Error("Failed to get user by email");
-
-    return user;
+    return result.rows[0];
   } finally {
     client.release();
   }
 }
 
-export async function getUserByUsername(username: string): Promise<User> {
+export async function getUserByUsername(
+  username: string
+): Promise<User | undefined> {
   const client = await pool.connect();
   try {
     const result = await client.query<User>(
@@ -33,10 +32,7 @@ export async function getUserByUsername(username: string): Promise<User> {
       [username.toLowerCase()]
     );
 
-    const user = result.rows[0];
-    if (!user) throw new Error("Failed to get user by username");
-
-    return user;
+    return result.rows[0];
   } finally {
     client.release();
   }
@@ -46,7 +42,7 @@ export async function postNewUser(
   username: string,
   password: string,
   email: string
-): Promise<User> {
+): Promise<User | undefined> {
   const client = await pool.connect();
   try {
     const result = await client.query<User>(
@@ -56,10 +52,7 @@ export async function postNewUser(
       [username.toLowerCase(), email.toLowerCase(), password]
     );
 
-    const user = result.rows[0];
-    if (!user) throw new Error("Failed to get user by email");
-
-    return user;
+    return result.rows[0];
   } finally {
     client.release();
   }

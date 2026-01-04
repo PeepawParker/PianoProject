@@ -33,9 +33,9 @@ app.use("/api/piano", pianoRoutes);
 // Global Error Handler
 app.use(errorHandler);
 
-pool.query("SELECT NOW()", (err, res) => {
-  if (err) {
-    console.error("Error connecting to the database", err.stack);
+pool.query("SELECT NOW()", (error, res) => {
+  if (error) {
+    console.error("Error connecting to the database", error.stack);
   } else {
     console.log(
       "Database connection successful. Server time is:",

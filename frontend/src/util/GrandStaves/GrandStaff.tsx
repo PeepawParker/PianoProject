@@ -118,7 +118,7 @@ export default function GrandStaff({
     currentNote.setStyle({ fillStyle: "red", strokeStyle: "red" });
     bassVoice.draw(context, bassStave);
 
-    // Correctly structure this
+    // List the total range of notes allowed for the practice
     if (userKeys) {
       for (const userKey of userKeys) {
         // used to offset the userKeys from the range keys

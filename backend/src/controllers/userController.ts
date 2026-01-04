@@ -1,30 +1,45 @@
 import { NextFunction, Request, Response } from "express";
 import * as pianoModel from "../models/pianoModel";
+import AppError from "../utils/appError";
 
 export async function getUserPianos(
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<void> {
-  const userId: number = parseInt(req.params.userId!, 10);
+  try {
+    const userId: number = parseInt(req.params.userId!, 10);
 
-  const userPianos = await pianoModel.getPianosByUserId(userId);
+    const userPianos = await pianoModel.getPianosByUserId(userId);
 
-  res.status(200).json({
-    status: "success",
-    userPianos,
-  });
+    res.status(200).json({
+      status: "success",
+      userPianos,
+    });
+  } catch (error) {
+    next(error);
+  }
 }
 
 export async function getUserPianoKeys(
   req: Request,
-  res: Response
+  res: Response,
+  next: NextFunction
 ): Promise<void> {
-  const pianoId: number = parseInt(req.params.pianoId!, 10);
+  try {
+    const pianoId: number = parseInt(req.params.pianoId!, 10);
 
-  const userPianoKeys = await pianoModel.getMappedKeysByPianoId(pianoId);
+    const userPianoKeys = await pianoModel.getMappedKeysByPianoId(pianoId);
 
-  res.status(200).json({
-    status: "success",
-    userPianoKeys,
-  });
+    if (userPianoKeys.length === 0) {
+      return next(new AppError("No keys found for this piano", 404));
+    }
+
+    res.status(200).json({
+      status: "success",
+      userPianoKeys,
+    });
+  } catch (error) {
+    next(error);
+  }
 }

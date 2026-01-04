@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from "express";
 export const asyncHandler =
   (fn: (req: Request, res: Response, next: NextFunction) => Promise<any>) =>
   (req: Request, res: Response, next: NextFunction) => {
-    // .catch(next) is equivalent to .catch((err) => next(err));
+    // .catch(next) is equivalent to .catch((error) => next(error));
     // When you call .catch() and pass a function as the argument it calls that function with the error as its argument
-    fn(req, res, next).catch(next);
+    return Promise.resolve(fn(req, res, next).catch((error) => next(error)));
   };
