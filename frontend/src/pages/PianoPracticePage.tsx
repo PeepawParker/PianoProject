@@ -15,15 +15,9 @@ export default function PianoPracticePage() {
 
   // TODO have a correct and incorrect counter along with like time elapsed for the current session
 
-  // TODO have a way for users to also practice flats
-
   // (for the ones above and bellow you probably want to make it just a <p> with 2 buttons that increment it up or down)
 
   // TODO: make it so users cant input their own values in the range inputs. Only being allowed to click or hold the given buttons
-
-  // TODO BIG TODO you need to figure out how you're going to efficiently update the frequency for when its flat vs when its sharp
-
-  // You are almost there you just need the note to get moved to the right line and to update the frequency
 
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
@@ -56,14 +50,14 @@ export default function PianoPracticePage() {
           // %50 for it to swap from a sharp to a flat if both are active when practicing
           const result = Math.round(Math.random());
 
+          // update the note to be a flat
           if (result == 1) {
             randomKey.noteType = "flat";
             const note = randomKey.baseNote[0] + "#" + randomKey.baseNote[2];
             const flatNote = enharmonicFlats[note];
             // Update it to a baseNote because we are adding the accidental within the grandStaff
             const baseNote = flatNote.replace("b", "/");
-            randomKey.baseNote = baseNote; // update the base note because it isn't the same as just swapping the sharp for a flat
-            randomKey.frequency = noteFrequencies[note]; // update the frequency so it is the correct note
+            randomKey.baseNote = baseNote; // updating because a sharp and flat of the same note aren't on the same line
           }
         }
         // 50/50 for what one it will pick
