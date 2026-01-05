@@ -7,7 +7,6 @@ import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { pianoLiveListener } from "../util/pianoListenerSetup";
 import { notes } from "../util/notes88";
-import { enharmonicFlats } from "../util/notes88";
 import parseNotes from "../util/parseNotes";
 import GrandStaffRange from "./GrandStaves/GrandStaffRange";
 
@@ -43,10 +42,24 @@ export default function PianoPracticePage() {
         Math.floor(Math.random() * (highNoteIndex - lowNoteIndex + 1)) +
         lowNoteIndex;
 
-      const randomKey = userKeys[randNum];
+      const randomKey = { ...userKeys[randNum] };
+      if (includeFlats && includeSharps && randomKey.noteType === "sharp") {
+        const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
+        if (canBeFlat) {
+          // %50 for it to swap from a sharp to a flat if both are active when practicing
+          const result = Math.round(Math.random());
+          if (result == 1) {
+            randomKey.noteType = "flat";
+          }
+        }
+        // 50/50 for what one it will pick
+      } else if (includeFlats && randomKey.noteType === "sharp") {
+        const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
+        if (canBeFlat) randomKey.noteType = "flat";
+      }
       setRandomKey(randomKey);
     },
-    [highNoteIndex, lowNoteIndex]
+    [highNoteIndex, includeFlats, includeSharps, lowNoteIndex]
   );
 
   // Sets the highNote Index after userKeys is defined
@@ -101,7 +114,7 @@ export default function PianoPracticePage() {
         <div>
           <GrandStaffPractice
             currentNoteValue={randomKey.baseNote}
-            currentNoteIsSharp={randomKey.isSharp}
+            currentNoteAccidental={randomKey.noteType}
             correct={correct}
           />
         </div>

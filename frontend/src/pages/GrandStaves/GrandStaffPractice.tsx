@@ -61,6 +61,8 @@ export default function GrandStaffPractice({
     });
     if (currentNoteAccidental === "sharp") {
       currentNote.addModifier(new Accidental("#"), 0);
+    } else if (currentNoteAccidental === "flat") {
+      currentNote.addModifier(new Accidental("b"), 0);
     }
 
     const trebleVoice = new Voice({ numBeats: 1, beatValue: 4 });
@@ -76,7 +78,7 @@ export default function GrandStaffPractice({
     });
 
     trebleVoice.draw(context, trebleStave);
-  }, [correct, currentNoteIsSharp, currentNoteValue]);
+  }, [correct, currentNoteAccidental, currentNoteValue]);
 
   return <div ref={containerRef} style={{ marginTop: "50px" }}></div>;
 }
