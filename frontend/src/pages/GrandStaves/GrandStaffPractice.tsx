@@ -68,18 +68,6 @@ export default function GrandStaffPractice({
       .setContext(context)
       .draw();
 
-    console.log(
-      "here are all the current notes and their values",
-      NoteOneValue,
-      NoteOneAccidental,
-      NoteTwoValue,
-      NoteTwoAccidental,
-      NoteThreeValue,
-      NoteThreeAccidental,
-      NoteFourValue,
-      NoteFourAccidental
-    );
-
     const noteOne = new StaveNote({
       keys: [NoteOneValue],
       duration: "q",

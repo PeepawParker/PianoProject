@@ -66,6 +66,7 @@ export async function pianoLiveListener(
   getKeyFrequency: () => number | undefined,
   setCorrect: (correct: boolean) => void
 ): Promise<() => void> {
+  console.log("here is the target frequency: ", getKeyFrequency());
   const { stop } = await pianoListenerSetup([], (pitch) => {
     const frequency = parseFloat(pitch.toFixed(2));
     const targetFrequency = getKeyFrequency();

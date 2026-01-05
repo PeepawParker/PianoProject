@@ -6,25 +6,19 @@ import { getUserMappedKeys } from "../api/piano";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { pianoLiveListener } from "../util/pianoListenerSetup";
-import { notes, enharmonicFlats } from "../util/notes88";
+import { notes, enharmonicFlats, noteFrequencies } from "../util/notes88";
 import parseNotes from "../util/parseNotes";
 import GrandStaffRange from "./GrandStaves/GrandStaffRange";
+import firstRandNote from "../util/firstRandNote";
 
 export default function PianoPracticePage() {
-  // Todo add a like left / right hand mode wheere you practice 2 hands at once with it displaying notes in the treble and bass cleff 2 notes at the same time
+  // Todo add a like left / right hand mode where you practice 2 hands at once with it displaying notes in the treble and bass cleff 2 notes at the same time
 
   // TODO have a correct and incorrect counter along with like time elapsed for the current session
 
-  // (for the ones above and bellow you probably want to make it just a <p> with 2 buttons that increment it up or down)
-
-  // TODO: make it so users cant input their own values in the range inputs. Only being allowed to click or hold the given buttons
-
   // TODO make it a toggle for the number of notes that are made on the screen for practice
 
-  // TODO figure out why flats and sharps aren't being placed or are when they shouldnt\
-
-  // TODO figure out why you have to press start multiple times before it works
-  // Its only allowing one note to be made with each press of start for whatever reason figure out how to fix this
+  // TODO when you remove flats and sharps update the frequencies, right now they stay as the sharp frequencies
 
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
@@ -56,7 +50,6 @@ export default function PianoPracticePage() {
 
       // since we are just making a copy you can update the baseNote, frequency, and accidental without having to worry about it messing up future things
       const randomKey = { ...userKeys[randNum] };
-      // console.log("Here is the random key at the start: ", randomKey);
 
       if (includeFlats && includeSharps && randomKey.noteType === "sharp") {
         const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
@@ -70,13 +63,17 @@ export default function PianoPracticePage() {
             randomKey.baseNote = enharmonicFlats[randomKey.baseNote]; // updating because a sharp and flat of the same note aren't on the same line
           }
         }
-        // 50/50 for what one it will pick
       } else if (includeFlats && randomKey.noteType === "sharp") {
         const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
         if (canBeFlat) randomKey.noteType = "flat";
+      } else if (!includeSharps && !includeFlats) {
+        // update the sharp frequencies to standard frequencies
+        console.log("LOOOOOK: ", randomKey);
+        const noteName = randomKey.baseNote.replace("/", "");
+        randomKey.frequency = noteFrequencies[noteName];
+        randomKey.noteType = "natural";
+        console.log("LOOOOOK AFTER: ", randomKey);
       }
-
-      // console.log("Here is the random key at the end: ", randomKey);
 
       if (curIndex === 0) {
         setRandomKeyOne(randomKey);
@@ -125,6 +122,7 @@ export default function PianoPracticePage() {
   // Starts the listener if user selects start and a randomKey is ready
   useEffect(() => {
     if (start && currentNoteRef.current) {
+      console.log("is this even starting?");
       pianoLiveListener(
         () => currentNoteRef.current?.frequency,
         setCorrect
@@ -150,28 +148,28 @@ export default function PianoPracticePage() {
     }
   }, [correct, randomNote, userKeys, highNoteIndex, lowNoteIndex, noteIndex]);
 
-  useEffect(() => {
-    console.log(
-      start,
-      randomKeyOne,
-      randomKeyTwo,
-      randomKeyThree,
-      randomKeyFour
-    );
-  }, [randomKeyFour, randomKeyOne, randomKeyThree, randomKeyTwo, start]);
-
   return (
     <>
       <button
         onClick={() => {
           if (!start) {
-            let index = randomNote(userKeys, 0);
-            index = randomNote(userKeys, index);
-            index = randomNote(userKeys, index);
-            index = randomNote(userKeys, index);
-            setNoteIndex(index);
-          }
+            // Sets the first note seperately so that the ref is correctly initialized
+            const firstNote = firstRandNote(
+              includeFlats,
+              includeSharps,
+              highNoteIndex,
+              lowNoteIndex,
+              userKeys,
+              setRandomKeyOne
+            );
 
+            let index = randomNote(userKeys, 1);
+            index = randomNote(userKeys, index);
+            randomNote(userKeys, index);
+
+            currentNoteRef.current = firstNote;
+            setNoteIndex(0);
+          }
           setStart((prevStart) => !prevStart);
         }}
       >
