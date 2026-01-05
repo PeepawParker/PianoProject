@@ -3,3 +3,6 @@ Tomorrow TODO:
     Add a test tab where you can go through each note on your keyboard and confirm that the note is mapped to the correct key to make it easy for users to see what keys should be remapped
 
     Have key tester where users can see which keys are out of tune and need to be remapped
+
+
+Make the practice so that instead of it just doing one note at a time it instead shows 4 notes and there is a counter that starts at 1. For each correct note it increments by 1 and makes the current note it's listeneing for the next note. It does this until it gets to 4 and then resets back to 1. It will still do the getNewRandomNote everytime you answer correctly only now this helps you practice looking ahead rather than just doing the 1 note

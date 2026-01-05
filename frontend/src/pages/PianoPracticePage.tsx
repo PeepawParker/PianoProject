@@ -6,7 +6,7 @@ import { getUserMappedKeys } from "../api/piano";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { pianoLiveListener } from "../util/pianoListenerSetup";
-import { notes, enharmonicFlats, noteFrequencies } from "../util/notes88";
+import { notes, enharmonicFlats } from "../util/notes88";
 import parseNotes from "../util/parseNotes";
 import GrandStaffRange from "./GrandStaves/GrandStaffRange";
 
@@ -19,19 +19,30 @@ export default function PianoPracticePage() {
 
   // TODO: make it so users cant input their own values in the range inputs. Only being allowed to click or hold the given buttons
 
+  // TODO make it a toggle for the number of notes that are made on the screen for practice
+
+  // TODO figure out why flats and sharps aren't being placed or are when they shouldnt
+
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
   const [userKeys, setUserKeys] = useState<UserNote[]>([]);
-  const [randomKey, setRandomKey] = useState<UserNote>();
+
+  const [randomKeyOne, setRandomKeyOne] = useState<UserNote>();
+  const [randomKeyTwo, setRandomKeyTwo] = useState<UserNote>();
+  const [randomKeyThree, setRandomKeyThree] = useState<UserNote>();
+  const [randomKeyFour, setRandomKeyFour] = useState<UserNote>();
+  const [noteIndex, setNoteIndex] = useState<number>(0);
+
   const [start, setStart] = useState<boolean>(false);
   const [correct, setCorrect] = useState<boolean | null>(null);
-  const [includeSharps, setIncludeSharps] = useState<boolean>(true);
-  const [includeFlats, setIncludeFlats] = useState<boolean>(true);
+  const [includeSharps, setIncludeSharps] = useState<boolean>(false);
+  const [includeFlats, setIncludeFlats] = useState<boolean>(false);
   const [highNoteIndex, setHighNoteIndex] = useState<number>(0);
   const highNote = parseNotes(notes[highNoteIndex]);
   const [lowNoteIndex, setLowNoteIndex] = useState<number>(0);
   const lowNote = parseNotes(notes[lowNoteIndex]);
   const stopListenerRef = useRef<(() => void) | null>(null);
+  const currentNoteRef = useRef<UserNote | undefined>(undefined);
 
   // Gives the practice program a random note within the set range to test the user on
   const randomNote = useCallback(
@@ -61,9 +72,35 @@ export default function PianoPracticePage() {
         const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
         if (canBeFlat) randomKey.noteType = "flat";
       }
-      setRandomKey(randomKey);
+      if (noteIndex === 0) {
+        setRandomKeyOne(randomKey);
+        setNoteIndex(1);
+        currentNoteRef.current = randomKeyTwo;
+      } else if (noteIndex === 1) {
+        setRandomKeyTwo(randomKey);
+        setNoteIndex(2);
+        currentNoteRef.current = randomKeyThree;
+      } else if (noteIndex === 2) {
+        setRandomKeyThree(randomKey);
+        setNoteIndex(3);
+        currentNoteRef.current = randomKeyFour;
+      } else {
+        setRandomKeyFour(randomKey);
+        setNoteIndex(0);
+        currentNoteRef.current = randomKeyOne;
+      }
     },
-    [highNoteIndex, includeFlats, includeSharps, lowNoteIndex]
+    [
+      highNoteIndex,
+      includeFlats,
+      includeSharps,
+      lowNoteIndex,
+      noteIndex,
+      randomKeyFour,
+      randomKeyOne,
+      randomKeyThree,
+      randomKeyTwo,
+    ]
   );
 
   // Sets the highNote Index after userKeys is defined
@@ -82,8 +119,11 @@ export default function PianoPracticePage() {
 
   // Starts the listener if user selects start and a randomKey is ready
   useEffect(() => {
-    if (start && randomKey) {
-      pianoLiveListener(randomKey.frequency, setCorrect).then((stop) => {
+    if (start && currentNoteRef.current) {
+      pianoLiveListener(
+        () => currentNoteRef.current?.frequency,
+        setCorrect
+      ).then((stop) => {
         stopListenerRef.current = stop; // Pointer to the function that will stop the listener
       });
     } else {
@@ -92,7 +132,7 @@ export default function PianoPracticePage() {
     }
 
     return () => stopListenerRef.current?.();
-  }, [randomKey, start]);
+  }, [start]);
 
   // After a 1 second delay change to a new randomNote and reset correct to null
   useEffect(() => {
@@ -114,11 +154,22 @@ export default function PianoPracticePage() {
       >
         {!start ? "Start" : "Stop"}
       </button>
-      {start && randomKey ? (
+      {start &&
+      randomKeyOne &&
+      randomKeyTwo &&
+      randomKeyThree &&
+      randomKeyFour ? (
         <div>
           <GrandStaffPractice
-            currentNoteValue={randomKey.baseNote}
-            currentNoteAccidental={randomKey.noteType}
+            NoteOneValue={randomKeyOne.baseNote}
+            NoteOneAccidental={randomKeyOne.noteType}
+            NoteTwoValue={randomKeyTwo.baseNote}
+            NoteTwoAccidental={randomKeyTwo.noteType}
+            NoteThreeValue={randomKeyThree.baseNote}
+            NoteThreeAccidental={randomKeyThree.noteType}
+            NoteFourValue={randomKeyFour.baseNote}
+            NoteFourAccidental={randomKeyFour.noteType}
+            noteIndex={noteIndex}
             correct={correct}
           />
         </div>

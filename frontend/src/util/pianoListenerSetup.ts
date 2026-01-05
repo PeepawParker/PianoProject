@@ -63,14 +63,18 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
 // This function will live listen to the frequencies that are being transmitted through the users mic. If at any point they are within the range that the program deems worthy it will mark the note as correct and then move onto the next random note within the users note selection
 
 export async function pianoLiveListener(
-  keyFrequency: number,
+  getKeyFrequency: () => number | undefined,
   setCorrect: (correct: boolean) => void
 ): Promise<() => void> {
   const { stop } = await pianoListenerSetup([], (pitch) => {
     const frequency = parseFloat(pitch.toFixed(2));
+    const targetFrequency = getKeyFrequency();
+
+    // returns if the frequency was undefined
+    if (!targetFrequency) return;
     if (
-      frequency >= keyFrequency - keyFrequency * 0.01 &&
-      frequency <= keyFrequency + keyFrequency * 0.01
+      frequency >= targetFrequency - targetFrequency * 0.01 &&
+      frequency <= targetFrequency + targetFrequency * 0.01
     ) {
       console.log("the correct note was played good job");
       setCorrect(true);
