@@ -68,6 +68,18 @@ export default function GrandStaffPractice({
       .setContext(context)
       .draw();
 
+    console.log(
+      "here are all the current notes and their values",
+      NoteOneValue,
+      NoteOneAccidental,
+      NoteTwoValue,
+      NoteTwoAccidental,
+      NoteThreeValue,
+      NoteThreeAccidental,
+      NoteFourValue,
+      NoteFourAccidental
+    );
+
     const noteOne = new StaveNote({
       keys: [NoteOneValue],
       duration: "q",
@@ -96,9 +108,9 @@ export default function GrandStaffPractice({
       clef: "treble",
     });
     if (NoteThreeAccidental === "sharp") {
-      noteTwo.addModifier(new Accidental("#"), 0);
+      noteThree.addModifier(new Accidental("#"), 0);
     } else if (NoteThreeAccidental === "flat") {
-      noteTwo.addModifier(new Accidental("b"), 0);
+      noteThree.addModifier(new Accidental("b"), 0);
     }
 
     const noteFour = new StaveNote({
@@ -107,16 +119,16 @@ export default function GrandStaffPractice({
       clef: "treble",
     });
     if (NoteFourAccidental === "sharp") {
-      noteTwo.addModifier(new Accidental("#"), 0);
+      noteFour.addModifier(new Accidental("#"), 0);
     } else if (NoteFourAccidental === "flat") {
-      noteTwo.addModifier(new Accidental("b"), 0);
+      noteFour.addModifier(new Accidental("b"), 0);
     }
 
     const trebleVoice = new Voice({ numBeats: 4, beatValue: 4 });
     trebleVoice.addTickables([noteOne, noteTwo, noteThree, noteFour]);
     new Formatter().joinVoices([trebleVoice]).format([trebleVoice], 100);
 
-    // Sets color for user feedback to let them know if they got it right or wrong
+    // Sets color for user feedback to let them know if they got it right or wrong also sets the current note to orange to let users know what note they are on if they forgot
     if (noteIndex === 0) {
       noteOne.setStyle({
         fillStyle:

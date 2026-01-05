@@ -21,7 +21,10 @@ export default function PianoPracticePage() {
 
   // TODO make it a toggle for the number of notes that are made on the screen for practice
 
-  // TODO figure out why flats and sharps aren't being placed or are when they shouldnt
+  // TODO figure out why flats and sharps aren't being placed or are when they shouldnt\
+
+  // TODO figure out why you have to press start multiple times before it works
+  // Its only allowing one note to be made with each press of start for whatever reason figure out how to fix this
 
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
@@ -46,14 +49,14 @@ export default function PianoPracticePage() {
 
   // Gives the practice program a random note within the set range to test the user on
   const randomNote = useCallback(
-    (userKeys: UserNote[]) => {
+    (userKeys: UserNote[], curIndex: number) => {
       const randNum: number =
         Math.floor(Math.random() * (highNoteIndex - lowNoteIndex + 1)) +
         lowNoteIndex;
 
       // since we are just making a copy you can update the baseNote, frequency, and accidental without having to worry about it messing up future things
       const randomKey = { ...userKeys[randNum] };
-      console.log(randomKey);
+      // console.log("Here is the random key at the start: ", randomKey);
 
       if (includeFlats && includeSharps && randomKey.noteType === "sharp") {
         const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
@@ -72,22 +75,25 @@ export default function PianoPracticePage() {
         const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
         if (canBeFlat) randomKey.noteType = "flat";
       }
-      if (noteIndex === 0) {
+
+      // console.log("Here is the random key at the end: ", randomKey);
+
+      if (curIndex === 0) {
         setRandomKeyOne(randomKey);
-        setNoteIndex(1);
         currentNoteRef.current = randomKeyTwo;
-      } else if (noteIndex === 1) {
+        return 1;
+      } else if (curIndex === 1) {
         setRandomKeyTwo(randomKey);
-        setNoteIndex(2);
         currentNoteRef.current = randomKeyThree;
-      } else if (noteIndex === 2) {
+        return 2;
+      } else if (curIndex === 2) {
         setRandomKeyThree(randomKey);
-        setNoteIndex(3);
         currentNoteRef.current = randomKeyFour;
+        return 3;
       } else {
         setRandomKeyFour(randomKey);
-        setNoteIndex(0);
         currentNoteRef.current = randomKeyOne;
+        return 0;
       }
     },
     [
@@ -95,7 +101,6 @@ export default function PianoPracticePage() {
       includeFlats,
       includeSharps,
       lowNoteIndex,
-      noteIndex,
       randomKeyFour,
       randomKeyOne,
       randomKeyThree,
@@ -138,17 +143,35 @@ export default function PianoPracticePage() {
   useEffect(() => {
     if (correct === true) {
       setTimeout(() => {
-        randomNote(userKeys);
+        const index = randomNote(userKeys, noteIndex);
+        setNoteIndex(index);
         setCorrect(null);
       }, 1000);
     }
-  }, [correct, randomNote, userKeys, highNoteIndex, lowNoteIndex]);
+  }, [correct, randomNote, userKeys, highNoteIndex, lowNoteIndex, noteIndex]);
+
+  useEffect(() => {
+    console.log(
+      start,
+      randomKeyOne,
+      randomKeyTwo,
+      randomKeyThree,
+      randomKeyFour
+    );
+  }, [randomKeyFour, randomKeyOne, randomKeyThree, randomKeyTwo, start]);
 
   return (
     <>
       <button
         onClick={() => {
-          randomNote(userKeys);
+          if (!start) {
+            let index = randomNote(userKeys, 0);
+            index = randomNote(userKeys, index);
+            index = randomNote(userKeys, index);
+            index = randomNote(userKeys, index);
+            setNoteIndex(index);
+          }
+
           setStart((prevStart) => !prevStart);
         }}
       >
