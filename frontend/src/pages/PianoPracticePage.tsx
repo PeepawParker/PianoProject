@@ -53,11 +53,7 @@ export default function PianoPracticePage() {
           // update the note to be a flat
           if (result == 1) {
             randomKey.noteType = "flat";
-            const note = randomKey.baseNote[0] + "#" + randomKey.baseNote[2];
-            const flatNote = enharmonicFlats[note];
-            // Update it to a baseNote because we are adding the accidental within the grandStaff
-            const baseNote = flatNote.replace("b", "/");
-            randomKey.baseNote = baseNote; // updating because a sharp and flat of the same note aren't on the same line
+            randomKey.baseNote = enharmonicFlats[randomKey.baseNote]; // updating because a sharp and flat of the same note aren't on the same line
           }
         }
         // 50/50 for what one it will pick
