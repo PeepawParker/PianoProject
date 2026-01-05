@@ -11,13 +11,13 @@ import {
 
 interface GrandStaffPracticeProps {
   currentNoteValue: string;
-  currentNoteIsSharp: boolean;
+  currentNoteAccidental: string;
   correct: boolean | null;
 }
 
 export default function GrandStaffPractice({
   currentNoteValue,
-  currentNoteIsSharp,
+  currentNoteAccidental,
   correct,
 }: GrandStaffPracticeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -59,7 +59,7 @@ export default function GrandStaffPractice({
       duration: "q",
       clef: "treble",
     });
-    if (currentNoteIsSharp) {
+    if (currentNoteAccidental === "sharp") {
       currentNote.addModifier(new Accidental("#"), 0);
     }
 

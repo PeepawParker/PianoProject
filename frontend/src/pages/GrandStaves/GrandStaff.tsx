@@ -11,18 +11,18 @@ import {
 
 export interface UserNote {
   baseNote: string;
-  isSharp: boolean;
+  noteType: string;
   note_id: number;
   frequency: number;
 }
 
 interface GrandStaffProps {
   highNoteValue: string;
-  highIsSharp: boolean;
+  highAccidental: string;
   lowNoteValue: string;
-  lowIsSharp: boolean;
+  lowAccidental: string;
   currentNoteValue: string;
-  currentNoteIsSharp: boolean;
+  currentAccidental: string;
   userKeys: UserNote[] | undefined;
 }
 
@@ -30,11 +30,11 @@ interface GrandStaffProps {
 
 export default function GrandStaff({
   highNoteValue,
-  highIsSharp,
+  highAccidental,
   lowNoteValue,
-  lowIsSharp,
+  lowAccidental,
   currentNoteValue,
-  currentNoteIsSharp,
+  currentAccidental,
   userKeys,
 }: GrandStaffProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -78,7 +78,7 @@ export default function GrandStaff({
       duration: "w",
       clef: "treble",
     });
-    if (highIsSharp) {
+    if (highAccidental === "sharp") {
       highNote.addModifier(new Accidental("#"), 0);
     }
 
@@ -87,7 +87,7 @@ export default function GrandStaff({
       duration: "w",
       clef: "treble",
     });
-    if (lowIsSharp) {
+    if (lowAccidental === "sharp") {
       lowNote.addModifier(new Accidental("#"), 0);
     }
 
@@ -108,7 +108,7 @@ export default function GrandStaff({
       duration: "w",
       clef: "bass",
     });
-    if (currentNoteIsSharp) {
+    if (currentAccidental === "sharp") {
       currentNote.addModifier(new Accidental("#"), 0);
     }
 
@@ -137,7 +137,7 @@ export default function GrandStaff({
           duration: "w",
           clef: "bass",
         });
-        if (userKey.isSharp) {
+        if (userKey.noteType === "sharp") {
           finishedNote.addModifier(new Accidental("#"), 0);
         }
         finishedNote.setStyle({ fillStyle: "green", strokeStyle: "green" });
@@ -151,11 +151,11 @@ export default function GrandStaff({
   }, [
     highNoteValue,
     currentNoteValue,
-    currentNoteIsSharp,
-    highIsSharp,
     userKeys,
     lowNoteValue,
-    lowIsSharp,
+    highAccidental,
+    lowAccidental,
+    currentAccidental,
   ]);
 
   // Creates the ref

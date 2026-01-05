@@ -1,6 +1,6 @@
 import axios, { type AxiosResponse } from "axios";
 import { notes } from "../util/notes88";
-import type { UserNote } from "../util/GrandStaves/GrandStaff";
+import type { UserNote } from "../pages/GrandStaves/GrandStaff";
 import parseNotes from "../util/parseNotes";
 import type { Dispatch, SetStateAction } from "react";
 

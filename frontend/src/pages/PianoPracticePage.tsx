@@ -1,36 +1,42 @@
 import { useParams } from "react-router-dom";
-import GrandStaffPractice from "../util/GrandStaves/GrandStaffPractice";
+import GrandStaffPractice from "./GrandStaves/GrandStaffPractice";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { UserNote } from "../util/GrandStaves/GrandStaff";
+import type { UserNote } from "./GrandStaves/GrandStaff";
 import { getUserMappedKeys } from "../api/piano";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { pianoLiveListener } from "../util/pianoListenerSetup";
 import { notes } from "../util/notes88";
+import { enharmonicFlats } from "../util/notes88";
 import parseNotes from "../util/parseNotes";
-import GrandStaffRange from "../util/GrandStaves/GrandStaffRange";
+import GrandStaffRange from "./GrandStaves/GrandStaffRange";
 
 export default function PianoPracticePage() {
   // Todo add a like left / right hand mode wheere you practice 2 hands at once with it displaying notes in the treble and bass cleff 2 notes at the same time
 
   // TODO have a correct and incorrect counter along with like time elapsed for the current session
+
+  // TODO have a way for users to also practice flats
+
+  // (for the ones above and bellow you probably want to make it just a <p> with 2 buttons that increment it up or down)
+
+  // TODO: make it so users cant input their own values in the range inputs. Only being allowed to click or hold the given buttons
+
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
-
   const [userKeys, setUserKeys] = useState<UserNote[]>([]);
   const [randomKey, setRandomKey] = useState<UserNote>();
-
   const [start, setStart] = useState<boolean>(false);
   const [correct, setCorrect] = useState<boolean | null>(null);
-
   const [includeSharps, setIncludeSharps] = useState<boolean>(true);
+  const [includeFlats, setIncludeFlats] = useState<boolean>(true);
   const [highNoteIndex, setHighNoteIndex] = useState<number>(0);
   const highNote = parseNotes(notes[highNoteIndex]);
   const [lowNoteIndex, setLowNoteIndex] = useState<number>(0);
   const lowNote = parseNotes(notes[lowNoteIndex]);
-
   const stopListenerRef = useRef<(() => void) | null>(null);
 
+  // Gives the practice program a random note within the set range to test the user on
   const randomNote = useCallback(
     (userKeys: UserNote[]) => {
       const randNum: number =
@@ -38,34 +44,30 @@ export default function PianoPracticePage() {
         lowNoteIndex;
 
       const randomKey = userKeys[randNum];
-      console.log("here is the randomKey: ", randomKey);
-      if (!includeSharps) {
-        randomKey.isSharp = false;
-      }
       setRandomKey(randomKey);
     },
-    [highNoteIndex, includeSharps, lowNoteIndex]
+    [highNoteIndex, lowNoteIndex]
   );
 
+  // Sets the highNote Index after userKeys is defined
   useEffect(() => {
     if (userKeys.length > 0) {
       setHighNoteIndex(userKeys.length - 1);
     }
   }, [userKeys.length]);
 
-  // After doing this I just want you to make some quality of life changes so that the website runs atleast kinda decent and you don't need to remember the website in order to navigate it
-
+  // If there is a valid userId and pianoId it will fetch this pianos Keys
   useEffect(() => {
     if (!userId || !pianoId) return;
 
     getUserMappedKeys(userId, pianoId, setUserKeys);
   }, [userId, pianoId]);
 
+  // Starts the listener if user selects start and a randomKey is ready
   useEffect(() => {
     if (start && randomKey) {
-      // make randomKey include the frequency or just an array of the frequencies
       pianoLiveListener(randomKey.frequency, setCorrect).then((stop) => {
-        stopListenerRef.current = stop; // After the listener is setup both functions return recursively calling the detect function until you call the stop function
+        stopListenerRef.current = stop; // Pointer to the function that will stop the listener
       });
     } else {
       stopListenerRef.current?.();
@@ -75,8 +77,8 @@ export default function PianoPracticePage() {
     return () => stopListenerRef.current?.();
   }, [randomKey, start]);
 
+  // After a 1 second delay change to a new randomNote and reset correct to null
   useEffect(() => {
-    // When the correct value is changed to true I want it to wait 1 second, and then get a new random key along with reseting the correct value to null
     if (correct === true) {
       setTimeout(() => {
         randomNote(userKeys);
@@ -104,25 +106,34 @@ export default function PianoPracticePage() {
           />
         </div>
       ) : userKeys.length > 1 ? (
-        // Get a counter from 0 to length - 1 of the userNotes start the notes on 0 and 87 and then let them adjust these nubers for it to select the range of the notes that they will use for the practice
         <div>
           <GrandStaffRange
             highNoteValue={highNote.baseNote}
-            highIsSharp={highNote.isSharp}
+            highAccidental={highNote.noteType}
             lowNoteValue={lowNote.baseNote}
-            lowIsSharp={lowNote.isSharp}
+            lowAccidental={lowNote.noteType}
+            includeSharps={includeSharps}
+            includeFlats={includeFlats}
             userKeys={userKeys}
           />
-          {/* TODO: make it so users can input their own values only allow them to interact with this through the arrow buttons */}
           <label>
             <input
               type="checkbox"
               checked={includeSharps}
               onChange={(e) => setIncludeSharps(e.target.checked)}
             />
-            Sharps Included In Practice{" "}
-            {/* Make this update the userKeys so that it doesn't show the sharps anymore */}
+            Sharps Included In Practice
           </label>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={includeFlats}
+              onChange={(e) => setIncludeFlats(e.target.checked)}
+            />
+            Flats Included In Practice
+          </label>
+
           <p>Highest Note allowed</p>
           <input
             type="number"
@@ -133,7 +144,6 @@ export default function PianoPracticePage() {
             onChange={(e) => setHighNoteIndex(+e.target.value)}
           ></input>
 
-          {/* TODO: make it so users can input their own values only allow them to interact with this through the arrow buttons */}
           <p>Lowest Note allowed</p>
           <input
             type="number"

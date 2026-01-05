@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import type { UserNote } from "./GrandStaff";
 import {
   Renderer,
   Stave,
@@ -9,26 +10,23 @@ import {
   Formatter,
 } from "vexflow";
 
-export interface UserNote {
-  baseNote: string;
-  isSharp: boolean;
-  note_id: number;
-  frequency: number;
-}
-
 interface GrandStaffRangeProps {
   highNoteValue: string;
-  highIsSharp: boolean;
+  highAccidental: string;
   lowNoteValue: string;
-  lowIsSharp: boolean;
+  lowAccidental: string;
+  includeSharps: boolean;
+  includeFlats: boolean;
   userKeys: UserNote[];
 }
 
 export default function GrandStaffRange({
   highNoteValue,
-  highIsSharp,
+  highAccidental,
   lowNoteValue,
-  lowIsSharp,
+  lowAccidental,
+  includeSharps,
+  includeFlats,
   userKeys,
 }: GrandStaffRangeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -72,8 +70,12 @@ export default function GrandStaffRange({
       duration: "w",
       clef: "treble",
     });
-    if (highIsSharp) {
+    if (highAccidental === "sharp" && includeSharps) {
       highNote.addModifier(new Accidental("#"), 0);
+    } else if (highAccidental === "flat" && includeFlats) {
+      highNote.addModifier(new Accidental("b"), 0);
+    } else if (highAccidental === "sharp" && includeFlats && !includeSharps) {
+      highNote.addModifier(new Accidental("b"), 0);
     }
 
     const lowNote = new StaveNote({
@@ -81,8 +83,12 @@ export default function GrandStaffRange({
       duration: "w",
       clef: "treble",
     });
-    if (lowIsSharp) {
+    if (lowAccidental === "sharp" && includeSharps) {
       lowNote.addModifier(new Accidental("#"), 0);
+    } else if (lowAccidental === "flat" && includeFlats) {
+      lowNote.addModifier(new Accidental("b"), 0);
+    } else if (lowAccidental === "sharp" && includeFlats && !includeSharps) {
+      lowNote.addModifier(new Accidental("b"), 0);
     }
 
     const lowVoice = new Voice({ numBeats: 4, beatValue: 4 });
@@ -114,8 +120,17 @@ export default function GrandStaffRange({
           duration: "w",
           clef: "bass",
         });
-        if (userKey.isSharp) {
+        if (userKey.noteType === "sharp" && includeSharps) {
           finishedNote.addModifier(new Accidental("#"), 0);
+        }
+        // The userKeys only display sharps by default so just swap them to flats if they are sharp and either an ACDFG
+        else if (
+          userKey.noteType === "sharp" &&
+          !includeSharps &&
+          includeFlats
+        ) {
+          const canBeFlat = /^[ACDFG]/.test(userKey.baseNote);
+          if (canBeFlat) finishedNote.addModifier(new Accidental("b"));
         }
         finishedNote.setStyle({ fillStyle: "green", strokeStyle: "green" });
 
@@ -125,7 +140,15 @@ export default function GrandStaffRange({
         userVoice.draw(context, bassStave);
       }
     }
-  }, [highNoteValue, highIsSharp, userKeys, lowNoteValue, lowIsSharp]);
+  }, [
+    highNoteValue,
+    userKeys,
+    lowNoteValue,
+    includeSharps,
+    highAccidental,
+    lowAccidental,
+    includeFlats,
+  ]);
 
   // Creates the ref
   return <div ref={containerRef} style={{ marginTop: "50px" }}></div>;

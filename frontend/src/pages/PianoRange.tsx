@@ -5,7 +5,7 @@ import type { AppRootState } from "../stores/store";
 import { useParams } from "react-router-dom";
 import { getUserMappedKeys } from "../api/piano";
 
-import parseNotes from "./parseNotes";
+import parseNotes from "../util/parseNotes";
 
 export interface Note {
   baseNote: string;
@@ -51,11 +51,11 @@ export default function PianoRange({
       <div>
         <GrandStaff
           highNoteValue={highParsed.baseNote}
-          highIsSharp={highParsed?.isSharp}
+          highAccidental={highParsed.noteType}
           lowNoteValue={lowParsed.baseNote}
-          lowIsSharp={lowParsed?.isSharp}
+          lowAccidental={lowParsed.noteType}
           currentNoteValue={currentParsed.baseNote}
-          currentNoteIsSharp={currentParsed?.isSharp}
+          currentAccidental={currentParsed.noteType}
           userKeys={userKeys}
         />
       </div>

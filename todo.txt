@@ -1,22 +1,5 @@
 Tomorrow TODO:
 
-    Make a back / forward button for the note listener rather than a retry 
-
     Add a test tab where you can go through each note on your keyboard and confirm that the note is mapped to the correct key to make it easy for users to see what keys should be remapped
 
     Have key tester where users can see which keys are out of tune and need to be remapped
-    
-
-Start on the measuring of a sounds frequency to then store in the database,
-Each piano should have its own profile of keys mapped to the frequencies specified,
-User should first specify how many keys, and piano name. This Piano in the database will then be linked to the Piano Keys database which will hold the frequencies of each of the notes that the user has in there. I might make it like one long text string and force the user to complete all the notes before they are allowed to play
-
-Get a user store setup so the userInfo can be accessible from all of the pages
-
-Start on the piano key tune setup page figure out how you are going to measure the sound and store it in the database
-
-Eventually make it so that the range the listener accepts changes based on the current note its listening for
-
-Move the GrandStaff and PianoRange into folders and sort all teh ther pages into their own folders as necessary
-
-Make it so the userKeys are initially automatically set to the perfect tuning and then from here if their piano is out of tune they can remap the sounds manually to what the frequencies should be

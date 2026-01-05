@@ -36,9 +36,8 @@ function PianoProfileSetupPage() {
             >
               Submit
             </button>
-            {/* will post the piano data to the database with the curUserInformation */}
           </div>
-          {/* Drop down menu with the different piano profiles the user might have after the click it they will begin the process of recording the piano freqeuncies */}
+          {/* TODO make Drop down menu with the different number of piano keys options */}
         </div>
       ) : null}
     </>
