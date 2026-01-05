@@ -6,7 +6,7 @@ import { getUserMappedKeys } from "../api/piano";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { pianoLiveListener } from "../util/pianoListenerSetup";
-import { notes } from "../util/notes88";
+import { notes, enharmonicFlats, noteFrequencies } from "../util/notes88";
 import parseNotes from "../util/parseNotes";
 import GrandStaffRange from "./GrandStaves/GrandStaffRange";
 
@@ -20,6 +20,10 @@ export default function PianoPracticePage() {
   // (for the ones above and bellow you probably want to make it just a <p> with 2 buttons that increment it up or down)
 
   // TODO: make it so users cant input their own values in the range inputs. Only being allowed to click or hold the given buttons
+
+  // TODO BIG TODO you need to figure out how you're going to efficiently update the frequency for when its flat vs when its sharp
+
+  // You are almost there you just need the note to get moved to the right line and to update the frequency
 
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
@@ -42,14 +46,24 @@ export default function PianoPracticePage() {
         Math.floor(Math.random() * (highNoteIndex - lowNoteIndex + 1)) +
         lowNoteIndex;
 
+      // since we are just making a copy you can update the baseNote, frequency, and accidental without having to worry about it messing up future things
       const randomKey = { ...userKeys[randNum] };
+      console.log(randomKey);
+
       if (includeFlats && includeSharps && randomKey.noteType === "sharp") {
         const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
         if (canBeFlat) {
           // %50 for it to swap from a sharp to a flat if both are active when practicing
           const result = Math.round(Math.random());
+
           if (result == 1) {
             randomKey.noteType = "flat";
+            const note = randomKey.baseNote[0] + "#" + randomKey.baseNote[2];
+            const flatNote = enharmonicFlats[note];
+            // Update it to a baseNote because we are adding the accidental within the grandStaff
+            const baseNote = flatNote.replace("b", "/");
+            randomKey.baseNote = baseNote; // update the base note because it isn't the same as just swapping the sharp for a flat
+            randomKey.frequency = noteFrequencies[note]; // update the frequency so it is the correct note
           }
         }
         // 50/50 for what one it will pick
