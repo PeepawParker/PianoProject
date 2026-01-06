@@ -1,4 +1,4 @@
-import { enharmonicFlats, noteFrequencies } from "./notes88";
+import { enharmonicFlats } from "./notes88";
 import type { UserNote } from "../pages/GrandStaves/GrandStaff";
 
 export default function firstRandNote(
@@ -16,6 +16,8 @@ export default function firstRandNote(
   // Create the first note seperate so we can add it to the noteRef
   const firstNote: UserNote | undefined = { ...userKeys[randNum] };
 
+  console.log("first note before:", firstNote);
+
   if (includeFlats && includeSharps && firstNote.noteType === "sharp") {
     const canBeFlat = /^[ACDFG]/.test(firstNote.baseNote);
     if (canBeFlat) {
@@ -31,15 +33,17 @@ export default function firstRandNote(
   } else if (includeFlats && firstNote.noteType === "sharp") {
     const canBeFlat = /^[ACDFG]/.test(firstNote.baseNote);
     if (canBeFlat) firstNote.noteType = "flat";
-  } else if (!includeSharps && !includeFlats) {
+  } else if (
+    !includeSharps &&
+    !includeFlats &&
+    firstNote.noteType === "sharp" // Don't need to check for flats because they will always by default be sharp uless they are changed in this function
+  ) {
     // update the sharp frequencies to standard frequencies
-    console.log("LOOOOOK FIRST: ", firstNote);
-    const noteName = firstNote.baseNote.replace("/", "");
-    firstNote.frequency = noteFrequencies[noteName];
+    firstNote.frequency = userKeys[randNum - 1].frequency;
     firstNote.noteType = "natural";
-    console.log("LOOOOOK FIRST AFTER: ", firstNote);
   }
 
   setRandomKeyOne(firstNote);
+  console.log("here is what firstNote is:", firstNote);
   return firstNote;
 }

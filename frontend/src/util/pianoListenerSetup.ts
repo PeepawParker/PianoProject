@@ -26,10 +26,6 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
       // Stops detect after 3 seconds
       setTimeout(() => {
         stop();
-        console.log(
-          "we got in here here are the frequencies we got: ",
-          frequencies
-        );
         const newFrequencies: number[] = [];
         let total: number = 0;
         let average: number;
@@ -66,7 +62,6 @@ export async function pianoLiveListener(
   getKeyFrequency: () => number | undefined,
   setCorrect: (correct: boolean) => void
 ): Promise<() => void> {
-  console.log("here is the target frequency: ", getKeyFrequency());
   const { stop } = await pianoListenerSetup([], (pitch) => {
     const frequency = parseFloat(pitch.toFixed(2));
     const targetFrequency = getKeyFrequency();
@@ -77,7 +72,6 @@ export async function pianoLiveListener(
       frequency >= targetFrequency - targetFrequency * 0.01 &&
       frequency <= targetFrequency + targetFrequency * 0.01
     ) {
-      console.log("the correct note was played good job");
       setCorrect(true);
     }
   });

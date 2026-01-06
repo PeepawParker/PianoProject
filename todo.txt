@@ -5,4 +5,10 @@ Tomorrow TODO:
     Have key tester where users can see which keys are out of tune and need to be remapped
 
 
-Make the practice so that instead of it just doing one note at a time it instead shows 4 notes and there is a counter that starts at 1. For each correct note it increments by 1 and makes the current note it's listeneing for the next note. It does this until it gets to 4 and then resets back to 1. It will still do the getNewRandomNote everytime you answer correctly only now this helps you practice looking ahead rather than just doing the 1 note
+You need to fix the note frequencies so that on the frontend it gets all the userKey frequencies because otherwise if they remap keys it will just be comparing them to these old frequencies if they aren't practicing with sharps / flats
+
+Make the number of notes you practice dynamic with users picking the number of notes they want to be displayed up to an extent
+
+Make the website look nicer
+
+Review code and clean it up

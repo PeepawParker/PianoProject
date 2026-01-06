@@ -6,7 +6,7 @@ import { getUserMappedKeys } from "../api/piano";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
 import { pianoLiveListener } from "../util/pianoListenerSetup";
-import { notes, enharmonicFlats, noteFrequencies } from "../util/notes88";
+import { notes, enharmonicFlats } from "../util/notes88";
 import parseNotes from "../util/parseNotes";
 import GrandStaffRange from "./GrandStaves/GrandStaffRange";
 import firstRandNote from "../util/firstRandNote";
@@ -43,6 +43,7 @@ export default function PianoPracticePage() {
 
   // Gives the practice program a random note within the set range to test the user on
   const randomNote = useCallback(
+    // When you take out the random key you just need to include the index so then you can go down one if its a sharp and they didnt want to include sharps rather than retrieving it from the notes88 page
     (userKeys: UserNote[], curIndex: number) => {
       const randNum: number =
         Math.floor(Math.random() * (highNoteIndex - lowNoteIndex + 1)) +
@@ -50,6 +51,7 @@ export default function PianoPracticePage() {
 
       // since we are just making a copy you can update the baseNote, frequency, and accidental without having to worry about it messing up future things
       const randomKey = { ...userKeys[randNum] };
+      console.log("randomKey before: ", randomKey);
 
       if (includeFlats && includeSharps && randomKey.noteType === "sharp") {
         const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
@@ -66,14 +68,17 @@ export default function PianoPracticePage() {
       } else if (includeFlats && randomKey.noteType === "sharp") {
         const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
         if (canBeFlat) randomKey.noteType = "flat";
-      } else if (!includeSharps && !includeFlats) {
+      } else if (
+        !includeSharps &&
+        !includeFlats &&
+        randomKey.noteType === "sharp" // Don't need to check for flats because they will always by default be sharp uless they are changed in this function
+      ) {
         // update the sharp frequencies to standard frequencies
-        console.log("LOOOOOK: ", randomKey);
-        const noteName = randomKey.baseNote.replace("/", "");
-        randomKey.frequency = noteFrequencies[noteName];
+        randomKey.frequency = userKeys[randNum - 1].frequency;
         randomKey.noteType = "natural";
-        console.log("LOOOOOK AFTER: ", randomKey);
       }
+
+      console.log("here is what randomKey is: ", randomKey);
 
       if (curIndex === 0) {
         setRandomKeyOne(randomKey);
@@ -122,7 +127,6 @@ export default function PianoPracticePage() {
   // Starts the listener if user selects start and a randomKey is ready
   useEffect(() => {
     if (start && currentNoteRef.current) {
-      console.log("is this even starting?");
       pianoLiveListener(
         () => currentNoteRef.current?.frequency,
         setCorrect

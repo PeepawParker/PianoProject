@@ -81,12 +81,6 @@ export async function postPutUserPianoKey(
       { pianoId, frequency, currentNote },
       { withCredentials: true }
     );
-    console.log("here is the response: ", response);
-    console.log(
-      "here is the frequency and currentNote: ",
-      frequency,
-      currentNote
-    );
     const parsedNote = parseNotes(currentNote);
     const newNote: UserNote = {
       ...parsedNote,
