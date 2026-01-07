@@ -1,1 +1,5 @@
 In general if the error occurs due to the sql not being able to run then you should throw a standard error within the model and catch it inside the controller throwing the appError from there. Otherwise if its just returning undefined then throw an AppError in the controller by catching this undefined
+
+If I need the value to be the correct up to data piace of data use A ref otherwise a useState is fine
+
+Using the modulo operator is an easy way to prevent out of bounds and wrap around in an array

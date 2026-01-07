@@ -9,7 +9,7 @@ import { pianoLiveListener } from "../util/pianoListenerSetup";
 import { notes, enharmonicFlats } from "../util/notes88";
 import parseNotes from "../util/parseNotes";
 import GrandStaffRange from "./GrandStaves/GrandStaffRange";
-import firstRandNote from "../util/firstRandNote";
+import initializeRandNotes from "../util/firstRandNote";
 
 export default function PianoPracticePage() {
   // Todo add a like left / right hand mode where you practice 2 hands at once with it displaying notes in the treble and bass cleff 2 notes at the same time
@@ -22,12 +22,11 @@ export default function PianoPracticePage() {
 
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
+  const [numPracticeNotes, setNumPracticeNotes] = useState<number>(1);
   const [userKeys, setUserKeys] = useState<UserNote[]>([]);
 
-  const [randomKeyOne, setRandomKeyOne] = useState<UserNote>();
-  const [randomKeyTwo, setRandomKeyTwo] = useState<UserNote>();
-  const [randomKeyThree, setRandomKeyThree] = useState<UserNote>();
-  const [randomKeyFour, setRandomKeyFour] = useState<UserNote>();
+  // TODO instead of having four of these have 1 that is and array of userNotes that will instead add/remove/update the notes that are being given
+  const [randomNotes, setRandomNotes] = useState<UserNote[]>([]);
   const [noteIndex, setNoteIndex] = useState<number>(0);
 
   const [start, setStart] = useState<boolean>(false);
@@ -42,72 +41,51 @@ export default function PianoPracticePage() {
   const currentNoteRef = useRef<UserNote | undefined>(undefined);
 
   // Gives the practice program a random note within the set range to test the user on
+  // Make this for after the user gets a correct and then the other will be used to initialize the randomNotesArray
   const randomNote = useCallback(
     // When you take out the random key you just need to include the index so then you can go down one if its a sharp and they didnt want to include sharps rather than retrieving it from the notes88 page
-    (userKeys: UserNote[], curIndex: number) => {
+    (userKeys: UserNote[]) => {
       const randNum: number =
         Math.floor(Math.random() * (highNoteIndex - lowNoteIndex + 1)) +
         lowNoteIndex;
 
       // since we are just making a copy you can update the baseNote, frequency, and accidental without having to worry about it messing up future things
-      const randomKey = { ...userKeys[randNum] };
-      console.log("randomKey before: ", randomKey);
+      const randomNote = { ...userKeys[randNum] };
 
-      if (includeFlats && includeSharps && randomKey.noteType === "sharp") {
-        const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
+      if (includeFlats && includeSharps && randomNote.noteType === "sharp") {
+        const canBeFlat = /^[ACDFG]/.test(randomNote.baseNote);
         if (canBeFlat) {
           // %50 for it to swap from a sharp to a flat if both are active when practicing
           const result = Math.round(Math.random());
 
           // update the note to be a flat
           if (result == 1) {
-            randomKey.noteType = "flat";
-            randomKey.baseNote = enharmonicFlats[randomKey.baseNote]; // updating because a sharp and flat of the same note aren't on the same line
+            randomNote.noteType = "flat";
+            randomNote.baseNote = enharmonicFlats[randomNote.baseNote]; // updating because a sharp and flat of the same note aren't on the same line
           }
         }
-      } else if (includeFlats && randomKey.noteType === "sharp") {
-        const canBeFlat = /^[ACDFG]/.test(randomKey.baseNote);
-        if (canBeFlat) randomKey.noteType = "flat";
+      } else if (includeFlats && randomNote.noteType === "sharp") {
+        const canBeFlat = /^[ACDFG]/.test(randomNote.baseNote);
+        if (canBeFlat) randomNote.noteType = "flat";
       } else if (
         !includeSharps &&
         !includeFlats &&
-        randomKey.noteType === "sharp" // Don't need to check for flats because they will always by default be sharp uless they are changed in this function
+        randomNote.noteType === "sharp" // Don't need to check for flats because they will always by default be sharp uless they are changed in this function
       ) {
         // update the sharp frequencies to standard frequencies
-        randomKey.frequency = userKeys[randNum - 1].frequency;
-        randomKey.noteType = "natural";
+        randomNote.frequency = userKeys[randNum - 1].frequency;
+        randomNote.noteType = "natural";
       }
 
-      console.log("here is what randomKey is: ", randomKey);
+      // Need to figure out how im going to update the ref dynamically
+      // I think I can use the index to have it update to whatever the index is in a useEffect, or maybe it'd be one more than the index and then if the index is the numPracticeNotes then I would reset it back to randomNotes[0]
 
-      if (curIndex === 0) {
-        setRandomKeyOne(randomKey);
-        currentNoteRef.current = randomKeyTwo;
-        return 1;
-      } else if (curIndex === 1) {
-        setRandomKeyTwo(randomKey);
-        currentNoteRef.current = randomKeyThree;
-        return 2;
-      } else if (curIndex === 2) {
-        setRandomKeyThree(randomKey);
-        currentNoteRef.current = randomKeyFour;
-        return 3;
-      } else {
-        setRandomKeyFour(randomKey);
-        currentNoteRef.current = randomKeyOne;
-        return 0;
-      }
+      // Need to update how I set the index because it will be updated dynamically
+      // Dont check just set it to what the current index is
+      // setRandomNote((prev) => prev[currentIndex]) when you do this also set the curRef
+      return randomNote;
     },
-    [
-      highNoteIndex,
-      includeFlats,
-      includeSharps,
-      lowNoteIndex,
-      randomKeyFour,
-      randomKeyOne,
-      randomKeyThree,
-      randomKeyTwo,
-    ]
+    [highNoteIndex, includeFlats, includeSharps, lowNoteIndex]
   );
 
   // Sets the highNote Index after userKeys is defined
@@ -145,12 +123,29 @@ export default function PianoPracticePage() {
   useEffect(() => {
     if (correct === true) {
       setTimeout(() => {
-        const index = randomNote(userKeys, noteIndex);
-        setNoteIndex(index);
+        setRandomNotes((prevNotes) => {
+          const copy = [...prevNotes];
+
+          const note = randomNote(userKeys);
+          copy[noteIndex] = note;
+          currentNoteRef.current = copy[(noteIndex + 1) % numPracticeNotes];
+
+          return copy;
+        });
+
+        setNoteIndex((i) => (i + 1 < numPracticeNotes ? i + 1 : 0));
         setCorrect(null);
       }, 1000);
     }
-  }, [correct, randomNote, userKeys, highNoteIndex, lowNoteIndex, noteIndex]);
+  }, [
+    correct,
+    randomNote,
+    userKeys,
+    highNoteIndex,
+    lowNoteIndex,
+    noteIndex,
+    numPracticeNotes,
+  ]);
 
   return (
     <>
@@ -158,18 +153,15 @@ export default function PianoPracticePage() {
         onClick={() => {
           if (!start) {
             // Sets the first note seperately so that the ref is correctly initialized
-            const firstNote = firstRandNote(
+            const firstNote = initializeRandNotes(
+              numPracticeNotes,
               includeFlats,
               includeSharps,
               highNoteIndex,
               lowNoteIndex,
               userKeys,
-              setRandomKeyOne
+              setRandomNotes
             );
-
-            let index = randomNote(userKeys, 1);
-            index = randomNote(userKeys, index);
-            randomNote(userKeys, index);
 
             currentNoteRef.current = firstNote;
             setNoteIndex(0);
@@ -179,21 +171,10 @@ export default function PianoPracticePage() {
       >
         {!start ? "Start" : "Stop"}
       </button>
-      {start &&
-      randomKeyOne &&
-      randomKeyTwo &&
-      randomKeyThree &&
-      randomKeyFour ? (
+      {start && randomNotes.length === numPracticeNotes ? (
         <div>
           <GrandStaffPractice
-            NoteOneValue={randomKeyOne.baseNote}
-            NoteOneAccidental={randomKeyOne.noteType}
-            NoteTwoValue={randomKeyTwo.baseNote}
-            NoteTwoAccidental={randomKeyTwo.noteType}
-            NoteThreeValue={randomKeyThree.baseNote}
-            NoteThreeAccidental={randomKeyThree.noteType}
-            NoteFourValue={randomKeyFour.baseNote}
-            NoteFourAccidental={randomKeyFour.noteType}
+            randomNotes={randomNotes}
             noteIndex={noteIndex}
             correct={correct}
           />
@@ -217,7 +198,6 @@ export default function PianoPracticePage() {
             />
             Sharps Included In Practice
           </label>
-
           <label>
             <input
               type="checkbox"
@@ -227,6 +207,16 @@ export default function PianoPracticePage() {
             Flats Included In Practice
           </label>
 
+          <p>Number of random notes you want to practice with</p>
+          <input
+            type="number"
+            min={1}
+            max={16}
+            step={1}
+            value={numPracticeNotes}
+            onChange={(e) => setNumPracticeNotes(+e.target.value)}
+          />
+
           <p>Highest Note allowed</p>
           <input
             type="number"
@@ -235,8 +225,7 @@ export default function PianoPracticePage() {
             step={1}
             value={highNoteIndex}
             onChange={(e) => setHighNoteIndex(+e.target.value)}
-          ></input>
-
+          />
           <p>Lowest Note allowed</p>
           <input
             type="number"
@@ -245,7 +234,7 @@ export default function PianoPracticePage() {
             step={1}
             value={lowNoteIndex}
             onChange={(e) => setLowNoteIndex(+e.target.value)}
-          ></input>
+          />
         </div>
       ) : (
         <p>You have no notes to practice idk how but you dont bruh</p>

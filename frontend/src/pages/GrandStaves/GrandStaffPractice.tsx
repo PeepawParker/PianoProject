@@ -8,29 +8,16 @@ import {
   Voice,
   Formatter,
 } from "vexflow";
+import type { UserNote } from "./GrandStaff";
 
 interface GrandStaffPracticeProps {
-  NoteOneValue: string;
-  NoteOneAccidental: string;
-  NoteTwoValue: string;
-  NoteTwoAccidental: string;
-  NoteThreeValue: string;
-  NoteThreeAccidental: string;
-  NoteFourValue: string;
-  NoteFourAccidental: string;
+  randomNotes: UserNote[];
   noteIndex: number;
   correct: boolean | null;
 }
 
 export default function GrandStaffPractice({
-  NoteOneValue,
-  NoteOneAccidental,
-  NoteTwoValue,
-  NoteTwoAccidental,
-  NoteThreeValue,
-  NoteThreeAccidental,
-  NoteFourValue,
-  NoteFourAccidental,
+  randomNotes,
   noteIndex,
   correct,
 }: GrandStaffPracticeProps) {
@@ -68,98 +55,44 @@ export default function GrandStaffPractice({
       .setContext(context)
       .draw();
 
-    const noteOne = new StaveNote({
-      keys: [NoteOneValue],
-      duration: "q",
-      clef: "treble",
-    });
-    if (NoteOneAccidental === "sharp") {
-      noteOne.addModifier(new Accidental("#"), 0);
-    } else if (NoteOneAccidental === "flat") {
-      noteOne.addModifier(new Accidental("b"), 0);
+    const staveNotes: StaveNote[] = [];
+
+    for (let i: number = 0; i < randomNotes.length; i++) {
+      const { baseNote, noteType } = randomNotes[i];
+
+      const note = new StaveNote({
+        keys: [baseNote],
+        duration: "q",
+        clef: "treble",
+      });
+
+      if (noteType === "sharp") {
+        note.addModifier(new Accidental("#"), 0);
+      } else if (noteType === "flat") {
+        note.addModifier(new Accidental("b"), 0);
+      }
+
+      staveNotes.push(note);
     }
 
-    const noteTwo = new StaveNote({
-      keys: [NoteTwoValue],
-      duration: "q",
-      clef: "treble",
+    const trebleVoice = new Voice({
+      numBeats: randomNotes.length,
+      beatValue: 4,
     });
-    if (NoteTwoAccidental === "sharp") {
-      noteTwo.addModifier(new Accidental("#"), 0);
-    } else if (NoteTwoAccidental === "flat") {
-      noteTwo.addModifier(new Accidental("b"), 0);
-    }
-
-    const noteThree = new StaveNote({
-      keys: [NoteThreeValue],
-      duration: "q",
-      clef: "treble",
-    });
-    if (NoteThreeAccidental === "sharp") {
-      noteThree.addModifier(new Accidental("#"), 0);
-    } else if (NoteThreeAccidental === "flat") {
-      noteThree.addModifier(new Accidental("b"), 0);
-    }
-
-    const noteFour = new StaveNote({
-      keys: [NoteFourValue],
-      duration: "q",
-      clef: "treble",
-    });
-    if (NoteFourAccidental === "sharp") {
-      noteFour.addModifier(new Accidental("#"), 0);
-    } else if (NoteFourAccidental === "flat") {
-      noteFour.addModifier(new Accidental("b"), 0);
-    }
-
-    const trebleVoice = new Voice({ numBeats: 4, beatValue: 4 });
-    trebleVoice.addTickables([noteOne, noteTwo, noteThree, noteFour]);
+    trebleVoice.addTickables(staveNotes);
     new Formatter().joinVoices([trebleVoice]).format([trebleVoice], 100);
 
     // Sets color for user feedback to let them know if they got it right or wrong also sets the current note to orange to let users know what note they are on if they forgot
-    if (noteIndex === 0) {
-      noteOne.setStyle({
-        fillStyle:
-          correct === true ? "green" : correct === false ? "red" : "orange",
-        strokeStyle:
-          correct === true ? "green" : correct === false ? "red" : "orange",
-      });
-    } else if (noteIndex === 1) {
-      noteTwo.setStyle({
-        fillStyle:
-          correct === true ? "green" : correct === false ? "red" : "orange",
-        strokeStyle:
-          correct === true ? "green" : correct === false ? "red" : "orange",
-      });
-    } else if (noteIndex === 2) {
-      noteThree.setStyle({
-        fillStyle:
-          correct === true ? "green" : correct === false ? "red" : "orange",
-        strokeStyle:
-          correct === true ? "green" : correct === false ? "red" : "orange",
-      });
-    } else if (noteIndex === 3) {
-      noteFour.setStyle({
-        fillStyle:
-          correct === true ? "green" : correct === false ? "red" : "orange",
-        strokeStyle:
-          correct === true ? "green" : correct === false ? "red" : "orange",
-      });
-    }
+
+    staveNotes[noteIndex].setStyle({
+      fillStyle:
+        correct === true ? "green" : correct === false ? "red" : "orange",
+      strokeStyle:
+        correct === true ? "green" : correct === false ? "red" : "orange",
+    });
 
     trebleVoice.draw(context, trebleStave);
-  }, [
-    NoteFourAccidental,
-    NoteFourValue,
-    NoteOneAccidental,
-    NoteOneValue,
-    NoteThreeAccidental,
-    NoteThreeValue,
-    NoteTwoAccidental,
-    NoteTwoValue,
-    correct,
-    noteIndex,
-  ]);
+  }, [correct, noteIndex, randomNotes]);
 
   return <div ref={containerRef} style={{ marginTop: "50px" }}></div>;
 }
