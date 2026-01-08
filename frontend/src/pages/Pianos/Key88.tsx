@@ -82,12 +82,14 @@ const Key88 = () => {
         {readyToListen ? (
           <>
             <button
+              disabled={listening}
               onClick={() => setCurrent((i) => (i + 1 < high ? i + 1 : low))}
             >
               ↑
             </button>
             <button
-              onClick={() => setCurrent((i) => (i - 1 > low ? i - 1 : high))}
+              disabled={listening}
+              onClick={() => setCurrent((i) => (i - 1 >= low ? i - 1 : high))}
             >
               ↓
             </button>

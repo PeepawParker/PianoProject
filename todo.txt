@@ -4,8 +4,6 @@ Tomorrow TODO:
 
     Have key tester where users can see which keys are out of tune and need to be remapped
 
-Figure out how to get the userNotes in the same order as they are within the notes88.ts file because right now its like half ordered half not. Simplest approach is probably some sort of sorting algorithm based on the frequency
-
 Low note values aren't being collected at allright now, need to tweak the logic for collecting the low notes I think they are getting filtered out right now
 
 Allow user to select either treble/bass clef or both to practice on

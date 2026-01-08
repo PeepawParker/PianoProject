@@ -106,7 +106,7 @@ export default function PianoPracticePage() {
   useEffect(() => {
     if (start && currentNoteRef.current) {
       pianoLiveListener(
-        () => currentNoteRef.current?.frequency,
+        () => currentNoteRef.current!.frequency,
         setCorrect
       ).then((stop) => {
         stopListenerRef.current = stop; // Pointer to the function that will stop the listener

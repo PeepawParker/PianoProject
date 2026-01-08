@@ -26,28 +26,28 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
       // Stops detect after 3 seconds
       setTimeout(() => {
         stop();
+        const tolerance = frequenciesList[index] < 80 ? 0.12 : 0.05;
         const newFrequencies: number[] = [];
         let total: number = 0;
-        let average: number;
         frequencies.forEach((num) => {
           if (
-            num > 25 &&
+            num > 20 &&
             num < 4500 &&
-            num > frequenciesList[index] - frequenciesList[index] * 0.05 &&
-            num < frequenciesList[index] + frequenciesList[index] * 0.05 // 5% margin of error
+            num > frequenciesList[index] - frequenciesList[index] * tolerance &&
+            num < frequenciesList[index] + frequenciesList[index] * tolerance
           ) {
             newFrequencies.push(num);
           }
         });
 
-        if (newFrequencies.length <= 20) {
-          // TODO have it somehow distinguish the background from the piano to map the values anyways even if they are not close to what the sounds should be
-          average = 0;
-        } else {
-          newFrequencies.forEach((num) => {
-            total += num;
-          });
-          average = total / newFrequencies.length;
+        newFrequencies.forEach((num) => {
+          total += num;
+        });
+        const average = total / newFrequencies.length;
+
+        if (newFrequencies.length === 0) {
+          resolve(0);
+          return;
         }
 
         resolve(average);
@@ -59,18 +59,19 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
 // This function will live listen to the frequencies that are being transmitted through the users mic. If at any point they are within the range that the program deems worthy it will mark the note as correct and then move onto the next random note within the users note selection
 
 export async function pianoLiveListener(
-  getKeyFrequency: () => number | undefined,
+  getKeyFrequency: () => number,
   setCorrect: (correct: boolean) => void
 ): Promise<() => void> {
   const { stop } = await pianoListenerSetup([], (pitch) => {
     const frequency = parseFloat(pitch.toFixed(2));
     const targetFrequency = getKeyFrequency();
+    const tolerance = targetFrequency < 80 ? 0.04 : 0.01;
 
     // returns if the frequency was undefined
     if (!targetFrequency) return;
     if (
-      frequency >= targetFrequency - targetFrequency * 0.01 &&
-      frequency <= targetFrequency + targetFrequency * 0.01
+      frequency >= targetFrequency - targetFrequency * tolerance &&
+      frequency <= targetFrequency + targetFrequency * tolerance
     ) {
       setCorrect(true);
     }
@@ -87,8 +88,8 @@ async function pianoListenerSetup(
   const audioCtx = new AudioContext();
   // Makes the audio data accessible to the detector
   const analyser = audioCtx.createAnalyser();
-  // frequency resolution (the bigger the number the more accurate the frequency detection, but slower to react to changes)
-  analyser.fftSize = 4096;
+  // frequency resolution (the bigger the number the more accurate the frequency detection, but longer latency)
+  analyser.fftSize = 8192;
 
   const bufferLength = analyser.fftSize;
   // holds the raw data
@@ -115,8 +116,9 @@ async function pianoListenerSetup(
     const [pitch, clarity] = detector.findPitch(buffer, audioCtx.sampleRate);
 
     // adds frequency to array if its clear enough, and over 22 Hz (background noise)
+    const minClarity = pitch < 80 ? 0.6 : 0.85;
 
-    if (pitch && clarity > 0.9 && pitch > 22) {
+    if (pitch && clarity > minClarity && pitch > 20) {
       if (!pitchCorrectness) {
         frequencies.push(parseFloat(pitch.toFixed(2)));
       } else if (pitchCorrectness) {
