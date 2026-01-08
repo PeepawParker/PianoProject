@@ -22,11 +22,14 @@ const frequenciesList: number[] = [
 export function pianoListenerThreeSec(index: number): Promise<number> {
   return new Promise((resolve) => {
     const frequencies: number[] = [];
-    pianoListenerSetup(frequencies).then(({ stop }) => {
+    pianoListenerSetup(frequencies, frequencies[index]).then(({ stop }) => {
       // Stops detect after 3 seconds
       setTimeout(() => {
         stop();
-        const tolerance = frequenciesList[index] < 80 ? 0.12 : 0.05;
+        let tolerance;
+        if (frequenciesList[index] < 80) tolerance = 0.12;
+        else if (frequenciesList[index] > 2000) tolerance = 0.015;
+        else tolerance = 0.05;
         const newFrequencies: number[] = [];
         let total: number = 0;
         frequencies.forEach((num) => {
@@ -62,7 +65,7 @@ export async function pianoLiveListener(
   getKeyFrequency: () => number,
   setCorrect: (correct: boolean) => void
 ): Promise<() => void> {
-  const { stop } = await pianoListenerSetup([], (pitch) => {
+  const { stop } = await pianoListenerSetup([], getKeyFrequency(), (pitch) => {
     const frequency = parseFloat(pitch.toFixed(2));
     const targetFrequency = getKeyFrequency();
     const tolerance = targetFrequency < 80 ? 0.04 : 0.01;
@@ -82,6 +85,7 @@ export async function pianoLiveListener(
 
 async function pianoListenerSetup(
   frequencies: number[],
+  expectedFrequency: number,
   pitchCorrectness?: (pitch: number) => void
 ): Promise<PianoListenerSetupReturn> {
   // audio processing workspace
@@ -89,7 +93,8 @@ async function pianoListenerSetup(
   // Makes the audio data accessible to the detector
   const analyser = audioCtx.createAnalyser();
   // frequency resolution (the bigger the number the more accurate the frequency detection, but longer latency)
-  analyser.fftSize = 8192;
+
+  analyser.fftSize = expectedFrequency > 2000 ? 2048 : 8192;
 
   const bufferLength = analyser.fftSize;
   // holds the raw data
@@ -116,7 +121,10 @@ async function pianoListenerSetup(
     const [pitch, clarity] = detector.findPitch(buffer, audioCtx.sampleRate);
 
     // adds frequency to array if its clear enough, and over 22 Hz (background noise)
-    const minClarity = pitch < 80 ? 0.6 : 0.85;
+    let minClarity;
+    if (pitch < 80) minClarity = 0.6;
+    else if (pitch > 2000) minClarity = 0.7;
+    else minClarity = 0.85;
 
     if (pitch && clarity > minClarity && pitch > 20) {
       if (!pitchCorrectness) {
