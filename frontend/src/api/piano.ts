@@ -41,6 +41,7 @@ export async function getUserMappedKeys(
     `http://localhost:3000/api/users/piano/${userId}/${pianoId}`
   );
 
+  console.log("here are the userKeys: ", response.data.userPianoKeys);
   const userKeys: PianoKey[] = response.data.userPianoKeys;
   const parsedKeys: UserNote[] = userKeys.map((key) => {
     const note = parseNotes(notes[key.note_id - 1]);
@@ -50,7 +51,8 @@ export async function getUserMappedKeys(
       frequency: key.frequency,
     };
   });
-  setUserKeys(parsedKeys);
+  const sortedParsedKeys = sortPianoKeys(parsedKeys);
+  setUserKeys(sortedParsedKeys);
 }
 
 export async function postUserPiano(
@@ -96,4 +98,40 @@ export async function postPutUserPianoKey(
     );
     // Nothing needs to happen here because the updated value that gets returned would look no different from the original value and we don't need the frequency or anything at this point on the frontend so no reason to overcomplicate it
   }
+}
+
+function sortPianoKeys(keys: UserNote[]): UserNote[] {
+  // sort it by the frequency smallest to largest
+
+  // Base case return if the array only has one item in it
+  if (keys.length <= 1) {
+    return keys;
+  }
+
+  const mid = Math.floor(keys.length / 2);
+  const left = sortPianoKeys(keys.slice(0, mid));
+  const right = sortPianoKeys(keys.slice(mid));
+
+  // Combine by sorting the left and right arrays that were returned from the last iteration
+  let lIndex = 0;
+  let rIndex = 0;
+  const sorted: UserNote[] = [];
+  while (lIndex < left.length && rIndex < right.length) {
+    if (left[lIndex].frequency < right[rIndex].frequency) {
+      sorted.push(left[lIndex++]);
+    } else {
+      sorted.push(right[rIndex++]);
+    }
+  }
+
+  // gets remaining items in the left/right array into the sorted array
+  while (lIndex < left.length) {
+    sorted.push(left[lIndex++]);
+  }
+
+  while (rIndex < right.length) {
+    sorted.push(right[rIndex++]);
+  }
+
+  return sorted;
 }

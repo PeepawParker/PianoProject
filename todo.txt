@@ -4,9 +4,7 @@ Tomorrow TODO:
 
     Have key tester where users can see which keys are out of tune and need to be remapped
 
-Make the number of notes you practice dynamic with users picking the number of notes they want to be displayed up to an extent
-
-The new random notes aren't always within the selected range figure out why this is because it shouldn't be happening. Might not even being the random number generator maybe the array just comes back out of order so its pulling a random high note
+Figure out how to get the userNotes in the same order as they are within the notes88.ts file because right now its like half ordered half not. Simplest approach is probably some sort of sorting algorithm based on the frequency
 
 Low note values aren't being collected at allright now, need to tweak the logic for collecting the low notes I think they are getting filtered out right now
 
@@ -17,10 +15,6 @@ Metronome
 Have a ear test where it plays a note and has the user play back the corresponding note
 
 Don't move onto next note if no data was collected when remapping the notes
-
-Have an up/down key when remapping keys instead of the dumb retry button that doesn't work
-
-Fix error when updating the final note don't let it increment again where it's out of range
 
 Seperate the PracticePage and the practice start page so not all of the code is on a single page
 

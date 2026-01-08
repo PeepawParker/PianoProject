@@ -135,7 +135,7 @@ export default function PianoPracticePage() {
 
         setNoteIndex((i) => (i + 1 < numPracticeNotes ? i + 1 : 0));
         setCorrect(null);
-      }, 1000);
+      }, 250);
     }
   }, [
     correct,

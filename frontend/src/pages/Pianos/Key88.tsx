@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { pianoListenerThreeSec } from "../../util/pianoListenerSetup";
 import PianoRange from "../PianoRange";
 import { useParams } from "react-router-dom";
@@ -19,21 +19,33 @@ const Key88 = () => {
     setListening(true);
     try {
       const avg: number = await pianoListenerThreeSec(current);
-      const existingKey = userKeys?.find((key) => key.note_id - 1 === current);
-      if (existingKey) {
-        postPutUserPianoKey(pianoId!, avg, notes[current], "put", setUserKeys);
-      } else {
-        postPutUserPianoKey(pianoId!, avg, notes[current], "post", setUserKeys);
+      if (avg != 0) {
+        const existingKey = userKeys?.find(
+          (key) => key.note_id - 1 === current
+        );
+        if (existingKey) {
+          postPutUserPianoKey(
+            pianoId!,
+            avg,
+            notes[current],
+            "put",
+            setUserKeys
+          );
+        } else {
+          postPutUserPianoKey(
+            pianoId!,
+            avg,
+            notes[current],
+            "post",
+            setUserKeys
+          );
+        }
+        setCurrent((i) => (i + 1 < high ? i + 1 : 0));
       }
     } finally {
-      setCurrent((prevCurrent) => prevCurrent + 1);
       setListening(false);
     }
   };
-
-  useEffect(() => {
-    console.log(userKeys);
-  }, [userKeys]);
 
   return (
     <>
@@ -67,7 +79,22 @@ const Key88 = () => {
               : "Click To Listen"
             : "Submit"}
         </button>
-        {readyToListen ? <button>Retry</button> : <></>}
+        {readyToListen ? (
+          <>
+            <button
+              onClick={() => setCurrent((i) => (i + 1 < high ? i + 1 : low))}
+            >
+              ↑
+            </button>
+            <button
+              onClick={() => setCurrent((i) => (i - 1 > low ? i - 1 : high))}
+            >
+              ↓
+            </button>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );
