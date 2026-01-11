@@ -41,7 +41,6 @@ export async function getUserMappedKeys(
     `http://localhost:3000/api/users/piano/${userId}/${pianoId}`
   );
 
-  console.log("here are the userKeys: ", response.data.userPianoKeys);
   const userKeys: PianoKey[] = response.data.userPianoKeys;
   const parsedKeys: UserNote[] = userKeys.map((key) => {
     const note = parseNotes(notes[key.note_id - 1]);

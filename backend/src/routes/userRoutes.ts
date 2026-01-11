@@ -18,4 +18,6 @@ router
   .route("/piano/:userId/:pianoId")
   .get(asyncHandler(userController.getUserPianoKeys));
 
+router.route("/data").post(asyncHandler(userController.upsertUserData));
+
 export default router;

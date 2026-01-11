@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import AppError from "../utils/appError";
-import * as userModel from "../models/userModels";
+import * as userModel from "../models/userModel";
 
 // Checks the data the user sent in when signing up, making sure that the data is good to push into the database
 interface NewUserBody {

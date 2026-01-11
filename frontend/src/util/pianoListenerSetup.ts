@@ -49,7 +49,7 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
         const average = total / newFrequencies.length;
 
         if (newFrequencies.length === 0) {
-          resolve(0);
+          resolve(frequenciesList[index             ]);
           return;
         }
 
@@ -94,7 +94,8 @@ async function pianoListenerSetup(
   const analyser = audioCtx.createAnalyser();
   // frequency resolution (the bigger the number the more accurate the frequency detection, but longer latency)
 
-  analyser.fftSize = expectedFrequency > 2000 ? 2048 : 8192;
+  analyser.fftSize =
+    expectedFrequency > 2000 || expectedFrequency < 100 ? 8192 : 2048;
 
   const bufferLength = analyser.fftSize;
   // holds the raw data

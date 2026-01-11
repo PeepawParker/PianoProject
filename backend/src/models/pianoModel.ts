@@ -15,6 +15,12 @@ export interface PianoKey {
   frequency: number;
 }
 
+export interface UserPianoData {
+  pianoId: number;
+  seconds: number;
+  correct_answers: number;
+}
+
 export interface Note {
   id: number;
   name: string;
@@ -68,12 +74,64 @@ export async function getMappedKeysByPianoId(
   try {
     const result = await client.query<PianoKey>(
       `
-      SELECT * FROM user_keys WHERE piano_id = $1
-    `,
+      SELECT * FROM user_keys WHERE piano_id = $1`,
       [pianoId]
     );
 
     return result.rows;
+  } finally {
+    client.release();
+  }
+}
+
+export async function pianoDataExists(pianoId: string): Promise<boolean> {
+  const client = await pool.connect();
+  try {
+    const result = await client.query(
+      `
+      SELECT * FROM user_piano_data WHERE piano_id = $1`,
+      [pianoId]
+    );
+    if (result.rows[0]) return true;
+    return false;
+  } finally {
+    client.release();
+  }
+}
+
+export async function updatePianoData(
+  pianoId: string,
+  seconds: number,
+  numCorrect: number
+): Promise<void> {
+  const client = await pool.connect();
+  try {
+    const result = await client.query<UserPianoData>(
+      `
+      UPDATE user_piano_data
+      SET seconds = seconds + $1,
+          correct_answers = correct_answers + $2
+      WHERE piano_id = $3`,
+      [seconds, numCorrect, pianoId]
+    );
+  } finally {
+    client.release();
+  }
+}
+
+export async function postPianoData(
+  pianoId: string,
+  seconds: number,
+  numCorrect: number
+): Promise<void> {
+  const client = await pool.connect();
+  try {
+    const result = await client.query<UserPianoData>(
+      `
+    INSERT INTO user_piano_data(piano_id, seconds, correct_answers)
+    VALUES ($1, $2, $3)`,
+      [pianoId, seconds, numCorrect]
+    );
   } finally {
     client.release();
   }
@@ -139,6 +197,7 @@ export async function postDefaultKeys(pianoId: number) {
     // You can do a standard error throw just best not to throw new AppErrors
     throw error;
   } finally {
+    client.release();
   }
 }
 

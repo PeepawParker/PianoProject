@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import * as userModel from "../models/userModels";
+import * as userModel from "../models/userModel";
 import bcrypt from "bcrypt";
 import AppError from "../utils/appError";
-import { User } from "../models/userModels";
+import { User } from "../models/userModel";
 
 export async function signup(
   req: Request,

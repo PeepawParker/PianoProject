@@ -10,24 +10,22 @@ import { notes, enharmonicFlats } from "../util/notes88";
 import parseNotes from "../util/parseNotes";
 import GrandStaffRange from "./GrandStaves/GrandStaffRange";
 import initializeRandNotes from "../util/firstRandNote";
+import { uploadUserData } from "../api/Users/uploadUserData";
 
 export default function PianoPracticePage() {
   // Todo add a like left / right hand mode where you practice 2 hands at once with it displaying notes in the treble and bass cleff 2 notes at the same time
 
   // TODO have a correct and incorrect counter along with like time elapsed for the current session
 
-  // TODO make it a toggle for the number of notes that are made on the screen for practice
-
-  // TODO when you remove flats and sharps update the frequencies, right now they stay as the sharp frequencies
-
   const { pianoId } = useParams();
   const { userId } = useSelector((state: AppRootState) => state.user);
   const [numPracticeNotes, setNumPracticeNotes] = useState<number>(1);
   const [userKeys, setUserKeys] = useState<UserNote[]>([]);
 
-  // TODO instead of having four of these have 1 that is and array of userNotes that will instead add/remove/update the notes that are being given
   const [randomNotes, setRandomNotes] = useState<UserNote[]>([]);
   const [noteIndex, setNoteIndex] = useState<number>(0);
+  const [numCorrect, setNumCorrect] = useState<number>(0);
+  const [seconds, setSeconds] = useState<number>(0);
 
   const [start, setStart] = useState<boolean>(false);
   const [correct, setCorrect] = useState<boolean | null>(null);
@@ -88,6 +86,16 @@ export default function PianoPracticePage() {
     [highNoteIndex, includeFlats, includeSharps, lowNoteIndex]
   );
 
+  useEffect(() => {
+    const id = setInterval(() => {
+      if (start) {
+        setSeconds((s) => s + 1);
+      }
+    }, 1000);
+
+    return () => clearInterval(id);
+  }, [start]);
+
   // Sets the highNote Index after userKeys is defined
   useEffect(() => {
     if (userKeys.length > 0) {
@@ -134,6 +142,7 @@ export default function PianoPracticePage() {
         });
 
         setNoteIndex((i) => (i + 1 < numPracticeNotes ? i + 1 : 0));
+        setNumCorrect((prev) => prev + 1);
         setCorrect(null);
       }, 250);
     }
@@ -150,7 +159,7 @@ export default function PianoPracticePage() {
   return (
     <>
       <button
-        onClick={() => {
+        onClick={async () => {
           if (!start) {
             // Sets the first note seperately so that the ref is correctly initialized
             const firstNote = initializeRandNotes(
@@ -165,6 +174,13 @@ export default function PianoPracticePage() {
 
             currentNoteRef.current = firstNote;
             setNoteIndex(0);
+          } else {
+            if (seconds > 0 && numCorrect > 0 && pianoId) {
+              // I  want to track this user data so they can see time elapsed practicing and their average time to click the correct note.
+              await uploadUserData(numCorrect, seconds, pianoId);
+            }
+            setSeconds(0);
+            setNumCorrect(0);
           }
           setStart((prevStart) => !prevStart);
         }}
@@ -173,6 +189,11 @@ export default function PianoPracticePage() {
       </button>
       {start && randomNotes.length === numPracticeNotes ? (
         <div>
+          <p>Correct: {numCorrect}</p>
+          <p>
+            Time Eslapsed: {Math.floor(seconds / 60)}:
+            {seconds % 60 < 10 ? "0" + (seconds % 60) : seconds % 60}
+          </p>
           <GrandStaffPractice
             randomNotes={randomNotes}
             noteIndex={noteIndex}

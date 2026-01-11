@@ -4,8 +4,6 @@ Tomorrow TODO:
 
     Have key tester where users can see which keys are out of tune and need to be remapped
 
-Low note values aren't being collected at allright now, need to tweak the logic for collecting the low notes I think they are getting filtered out right now
-
 Allow user to select either treble/bass clef or both to practice on
 
 Metronome
@@ -19,3 +17,7 @@ Seperate the PracticePage and the practice start page so not all of the code is 
 Make the website look nicer
 
 Review code and clean it up
+
+The highest notes (anything within the 7th octave give a warning that the results may not be accurate depending on the mic being used)
+
+Make a thing for true random notes vs a mode where the first note is completley random and then from there every note after is within 5 indexes of the previous note

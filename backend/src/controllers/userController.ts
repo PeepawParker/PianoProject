@@ -43,3 +43,31 @@ export async function getUserPianoKeys(
     next(error);
   }
 }
+
+export async function upsertUserData(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const {
+      pianoId,
+      seconds,
+      numCorrect,
+    }: { pianoId: string; numCorrect: number; seconds: number } = req.body;
+
+    const exists = await pianoModel.pianoDataExists(pianoId);
+
+    if (exists) {
+      await pianoModel.updatePianoData(pianoId, seconds, numCorrect);
+    } else {
+      await pianoModel.postPianoData(pianoId, seconds, numCorrect);
+    }
+
+    res.status(200).json({
+      status: "success",
+    });
+  } catch (error) {
+    next(error);
+  }
+}
