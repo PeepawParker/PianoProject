@@ -38,7 +38,8 @@ export async function getUserMappedKeys(
   setUserKeys: (keys: UserNote[]) => void
 ) {
   const response = await axios.get<UserMappedKeysResponse>(
-    `http://localhost:3000/api/users/piano/${userId}/${pianoId}`
+    `http://localhost:3000/api/users/piano/${userId}/${pianoId}`,
+    { withCredentials: true }
   );
 
   const userKeys: PianoKey[] = response.data.userPianoKeys;

@@ -16,7 +16,7 @@ export interface PianoKey {
 }
 
 export interface UserPianoData {
-  pianoId: number;
+  piano_id: number;
   seconds: number;
   correct_answers: number;
 }
@@ -33,7 +33,6 @@ export async function getPianosByUserId(userId: number) {
       `SELECT * FROM pianos WHERE user_id = $1`,
       [userId]
     );
-
     return result.rows;
   } finally {
     client.release();
@@ -77,6 +76,22 @@ export async function getMappedKeysByPianoId(
       SELECT * FROM user_keys WHERE piano_id = $1`,
       [pianoId]
     );
+
+    return result.rows;
+  } finally {
+    client.release();
+  }
+}
+
+export async function getUserPianoData(
+  pianoIds: string[]
+): Promise<UserPianoData[]> {
+  const client = await pool.connect();
+  try {
+    const placeholders = pianoIds.map((_, i) => `$${i + 1}`).join(", ");
+    const queryString = `SELECT * FROM user_piano_data WHERE piano_id IN (${placeholders})`;
+
+    const result = await client.query<UserPianoData>(queryString, pianoIds);
 
     return result.rows;
   } finally {

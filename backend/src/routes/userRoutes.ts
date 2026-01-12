@@ -13,11 +13,14 @@ router
 
 router.route("/login").post(asyncHandler(authController.login));
 
+router.route("/data").post(asyncHandler(userController.upsertUserData));
+
+router.route("/piano/data").get(asyncHandler(userController.getUserPianoData));
+
 router.route("/piano/:userId").get(asyncHandler(userController.getUserPianos));
+
 router
   .route("/piano/:userId/:pianoId")
   .get(asyncHandler(userController.getUserPianoKeys));
-
-router.route("/data").post(asyncHandler(userController.upsertUserData));
 
 export default router;

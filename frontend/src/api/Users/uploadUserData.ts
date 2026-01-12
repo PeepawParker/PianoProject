@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export interface UserPianoData {
-  pianoId: number;
+  piano_id: number;
   seconds: number;
   correct_answers: number;
 }

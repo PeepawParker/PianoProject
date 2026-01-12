@@ -21,3 +21,5 @@ Review code and clean it up
 The highest notes (anything within the 7th octave give a warning that the results may not be accurate depending on the mic being used)
 
 Make a thing for true random notes vs a mode where the first note is completley random and then from there every note after is within 5 indexes of the previous note
+
+ALlow users to select what notes should always be sharp / flat since typically that is how it is presented

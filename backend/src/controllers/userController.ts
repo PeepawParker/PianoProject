@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, raw, Request, Response } from "express";
 import * as pianoModel from "../models/pianoModel";
 import AppError from "../utils/appError";
 
@@ -38,6 +38,30 @@ export async function getUserPianoKeys(
     res.status(200).json({
       status: "success",
       userPianoKeys,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export async function getUserPianoData(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  try {
+    const rawPianos = req.query["pianos[]"] as string | string[];
+
+    // Make array so that getUserPianoData can handle data
+    const pianoIds: string[] = Array.isArray(rawPianos)
+      ? rawPianos
+      : [rawPianos];
+
+    const userPianoData = await pianoModel.getUserPianoData(pianoIds);
+
+    res.status(200).json({
+      status: "success",
+      userPianoData,
     });
   } catch (error) {
     next(error);
