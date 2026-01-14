@@ -18,6 +18,8 @@ interface GrandStaffRangeProps {
   includeSharps: boolean;
   includeFlats: boolean;
   userKeys: UserNote[];
+  trebleStaveBool: boolean;
+  bassStaveBool: boolean;
 }
 
 export default function GrandStaffRange({
@@ -28,6 +30,8 @@ export default function GrandStaffRange({
   includeSharps,
   includeFlats,
   userKeys,
+  trebleStaveBool,
+  bassStaveBool,
 }: GrandStaffRangeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -41,34 +45,43 @@ export default function GrandStaffRange({
     vf.resize(500, 400);
     const context = vf.getContext();
 
-    const trebleStave = new Stave(10, 70, 480);
-    trebleStave.addClef("treble");
-    trebleStave.setContext(context).draw();
+    let trebleStave: Stave | boolean = false;
+    let bassStave: Stave | boolean = false;
 
-    const bassStave = new Stave(10, 130, 480);
-    bassStave.addClef("bass");
-    bassStave.setContext(context).draw();
+    if (trebleStaveBool) {
+      trebleStave = new Stave(10, 70, 480);
+      trebleStave.addClef("treble");
+      trebleStave.setContext(context).draw();
+    }
 
-    new StaveConnector(trebleStave, bassStave)
-      .setType(StaveConnector.type.BRACE)
-      .setContext(context)
-      .draw();
+    if (bassStaveBool) {
+      bassStave = new Stave(10, 130, 480);
+      bassStave.addClef("bass");
+      bassStave.setContext(context).draw();
+    }
 
-    new StaveConnector(trebleStave, bassStave)
-      .setType(StaveConnector.type.SINGLE_LEFT)
-      .setContext(context)
-      .draw();
+    if (trebleStave && bassStave) {
+      new StaveConnector(trebleStave, bassStave)
+        .setType(StaveConnector.type.BRACE)
+        .setContext(context)
+        .draw();
 
-    new StaveConnector(trebleStave, bassStave)
-      .setType(StaveConnector.type.SINGLE_RIGHT)
-      .setContext(context)
-      .draw();
+      new StaveConnector(trebleStave, bassStave)
+        .setType(StaveConnector.type.SINGLE_LEFT)
+        .setContext(context)
+        .draw();
+
+      new StaveConnector(trebleStave, bassStave)
+        .setType(StaveConnector.type.SINGLE_RIGHT)
+        .setContext(context)
+        .draw();
+    }
 
     // Highest possible note on treble staff
     const highNote = new StaveNote({
       keys: [highNoteValue],
       duration: "w",
-      clef: "treble",
+      clef: trebleStaveBool ? "treble" : "bass",
     });
     if (highAccidental === "sharp" && includeSharps) {
       highNote.addModifier(new Accidental("#"), 0);
@@ -81,7 +94,7 @@ export default function GrandStaffRange({
     const lowNote = new StaveNote({
       keys: [lowNoteValue],
       duration: "w",
-      clef: "treble",
+      clef: trebleStaveBool ? "treble" : "bass",
     });
     if (lowAccidental === "sharp" && includeSharps) {
       lowNote.addModifier(new Accidental("#"), 0);
@@ -99,16 +112,21 @@ export default function GrandStaffRange({
     new Formatter()
       .joinVoices([highVoice, lowVoice])
       .format([highVoice, lowVoice], 400);
-    highVoice.draw(context, trebleStave);
-    lowVoice.draw(context, trebleStave);
 
-    if (userKeys) {
+    const staveToDrawOn = trebleStave || bassStave;
+
+    if (staveToDrawOn) {
+      highVoice.draw(context, staveToDrawOn);
+      lowVoice.draw(context, staveToDrawOn);
+    }
+
+    if (userKeys && staveToDrawOn) {
       for (const userKey of userKeys) {
         // used to offset the userKeys from the range keys
         const spacer = new StaveNote({
           keys: ["b/4"],
           duration: "w",
-          clef: "bass",
+          clef: trebleStaveBool ? "treble" : "bass",
         });
         spacer.setStyle({
           fillStyle: "transparent",
@@ -118,7 +136,7 @@ export default function GrandStaffRange({
         const finishedNote = new StaveNote({
           keys: [userKey.baseNote],
           duration: "w",
-          clef: "bass",
+          clef: trebleStaveBool ? "treble" : "bass",
         });
         if (userKey.noteType === "sharp" && includeSharps) {
           finishedNote.addModifier(new Accidental("#"), 0);
@@ -137,7 +155,7 @@ export default function GrandStaffRange({
         const userVoice = new Voice({ numBeats: 8, beatValue: 4 }); // double the beats
         userVoice.addTickables([spacer, finishedNote]);
         new Formatter().joinVoices([userVoice]).format([userVoice], 400);
-        userVoice.draw(context, bassStave);
+        userVoice.draw(context, staveToDrawOn);
       }
     }
   }, [
@@ -148,6 +166,8 @@ export default function GrandStaffRange({
     highAccidental,
     lowAccidental,
     includeFlats,
+    trebleStaveBool,
+    bassStaveBool,
   ]);
 
   // Creates the ref

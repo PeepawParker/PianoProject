@@ -45,7 +45,6 @@ export async function postKeyFrequency(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  console.log("we in post");
   try {
     const {
       pianoId,
@@ -77,7 +76,6 @@ export async function putKeyFrequency(
   next: NextFunction
 ): Promise<void> {
   try {
-    console.log("we in here");
     const {
       pianoId,
       frequency,

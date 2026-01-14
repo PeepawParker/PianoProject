@@ -19,9 +19,13 @@ export default function PracticePageSettings() {
     includeFlats,
     setIncludeSharps,
     setIncludeFlats,
+    trebleStave,
+    bassStave,
+    settrebleStave,
+    setbassStave,
   } = usePractice();
 
-  if (start || userKeys.length <= 1) {
+  if (userKeys.length <= 1) {
     return null;
   }
 
@@ -35,31 +39,68 @@ export default function PracticePageSettings() {
         includeSharps={includeSharps}
         includeFlats={includeFlats}
         userKeys={userKeys}
+        trebleStaveBool={trebleStave}
+        bassStaveBool={bassStave}
       />
-      <label>
-        <input
-          type="checkbox"
-          checked={includeSharps}
-          onChange={(e) => setIncludeSharps(e.target.checked)}
-        />
-        Sharps Included In Practice
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={includeFlats}
-          onChange={(e) => setIncludeFlats(e.target.checked)}
-        />
-        Flats Included In Practice
-      </label>
-      <label>
-        <input
-          type="checkbox"
-          checked={trueRandom}
-          onChange={(e) => setTrueRandom(e.target.checked)}
-        />
-        Make Notes Truly Random
-      </label>
+
+      {start ? <p>You need to select one or both of the Clefs</p> : null}
+
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={includeSharps}
+            onChange={(e) => setIncludeSharps(e.target.checked)}
+          />
+          Sharps Included
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={includeFlats}
+            onChange={(e) => setIncludeFlats(e.target.checked)}
+          />
+          Flats Included
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={trueRandom}
+            onChange={(e) => setTrueRandom(e.target.checked)}
+          />
+          Truly Random Notes
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            checked={trebleStave}
+            onChange={(e) => settrebleStave(e.target.checked)}
+          />
+          Treble Clef
+        </label>
+
+        <label>
+          <input
+            type="checkbox"
+            checked={bassStave}
+            onChange={(e) => setbassStave(e.target.checked)}
+          />
+          Bass Clef
+        </label>
+      </div>
+
+      <div>
+        {/* Future labels down here so we have rows rather than one line of selections */}
+        {/* <label>
+          <input
+            type="checkbox"
+            checked={bassStave}
+            onChange={(e) => setbassStave(e.target.checked)}
+          />
+          Bass Clef
+        </label> */}
+      </div>
 
       <p>Number of random notes you want to practice with</p>
       <input

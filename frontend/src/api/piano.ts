@@ -95,9 +95,7 @@ export async function postPutUserPianoKey(
 
       // Only will need below if you revert the change that auto populates all the notes with default frequencies because otherwise the notes get all out of order when submitting and then it starts to break
 
-      // console.log("before:", prevKeys);
       // const sortedPianoKeys = sortPianoKeys([...prevKeys, newNote]);
-      // console.log("after: ", sortedPianoKeys);
       // return sortedPianoKeys;
     });
   } else {

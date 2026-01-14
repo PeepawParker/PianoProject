@@ -60,8 +60,10 @@ function HomePage() {
                       {"Total Correct Answers: "}
                       {userPianoData[piano.id]?.correct_answers ?? 0} <br />
                       {"Average time to play correct key: "}
-                      {(userPianoData[piano.id]?.seconds ?? 0) /
-                        (userPianoData[piano.id]?.correct_answers ?? 1)}{" "}
+                      {(
+                        (userPianoData[piano.id]?.seconds ?? 0) /
+                        (userPianoData[piano.id]?.correct_answers ?? 1)
+                      ).toFixed(2)}{" "}
                       <br />
                     </p>
                   </div>

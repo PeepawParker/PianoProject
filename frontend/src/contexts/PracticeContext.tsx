@@ -1,4 +1,11 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+  type RefObject,
+} from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import type { AppRootState } from "../stores/store";
@@ -16,6 +23,10 @@ type PracticeContextType = {
   lowNoteIndex: number;
   seconds: number;
   numCorrect: number;
+  randomNotes: UserNote[];
+  noteIndex: number;
+  trebleStave: boolean;
+  bassStave: boolean;
 
   setStart: React.Dispatch<React.SetStateAction<boolean>>;
   setUserKeys: React.Dispatch<React.SetStateAction<UserNote[]>>;
@@ -27,6 +38,12 @@ type PracticeContextType = {
   setLowNoteIndex: React.Dispatch<React.SetStateAction<number>>;
   setSeconds: React.Dispatch<React.SetStateAction<number>>;
   setNumCorrect: React.Dispatch<React.SetStateAction<number>>;
+  setRandomNotes: React.Dispatch<React.SetStateAction<UserNote[]>>;
+  setNoteIndex: React.Dispatch<React.SetStateAction<number>>;
+  settrebleStave: React.Dispatch<React.SetStateAction<boolean>>;
+  setbassStave: React.Dispatch<React.SetStateAction<boolean>>;
+
+  currentNoteRef: RefObject<UserNote | undefined>;
 };
 
 const PracticeContext = createContext<PracticeContextType | null>(null);
@@ -42,6 +59,12 @@ export function PracticeProvider({ children }: { children: React.ReactNode }) {
   const [lowNoteIndex, setLowNoteIndex] = useState<number>(0);
   const [seconds, setSeconds] = useState<number>(0);
   const [numCorrect, setNumCorrect] = useState<number>(0);
+  const [randomNotes, setRandomNotes] = useState<UserNote[]>([]);
+  const [noteIndex, setNoteIndex] = useState<number>(0);
+  const [trebleStave, settrebleStave] = useState<boolean>(true);
+  const [bassStave, setbassStave] = useState<boolean>(true);
+
+  const currentNoteRef = useRef<UserNote | undefined>(undefined);
 
   const { userId } = useSelector((state: AppRootState) => state.user);
   const { pianoId } = useParams();
@@ -73,6 +96,11 @@ export function PracticeProvider({ children }: { children: React.ReactNode }) {
         lowNoteIndex,
         seconds,
         numCorrect,
+        randomNotes,
+        noteIndex,
+        currentNoteRef,
+        trebleStave,
+        bassStave,
         setStart,
         setUserKeys,
         setNumPracticeNotes,
@@ -83,6 +111,10 @@ export function PracticeProvider({ children }: { children: React.ReactNode }) {
         setLowNoteIndex,
         setSeconds,
         setNumCorrect,
+        setRandomNotes,
+        setNoteIndex,
+        settrebleStave,
+        setbassStave,
       }}
     >
       {children}

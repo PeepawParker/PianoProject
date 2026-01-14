@@ -4,25 +4,19 @@ Tomorrow TODO:
 
     Have key tester where users can see which keys are out of tune and need to be remapped
 
-FIX THE USESTATES THAT YOU HAVE MOST OF THEM ARE UNNECESSARY
-
-todo make the upload data work again its not right now
-
 Allow user to select either treble/bass clef or both to practice on
+
+Instead of having all the items be individual in the context make some groupings so im not having tot ype out 20 different variables for each
 
 Metronome
 
 Have a ear test where it plays a note and has the user play back the corresponding note
-
-Seperate the PracticePage and the practice start page so not all of the code is on a single page
 
 Make the website look nicer
 
 Review code and clean it up
 
 The highest notes (anything within the 7th octave give a warning that the results may not be accurate depending on the mic being used)
-
-Make a thing for true random notes vs a mode where the first note is completley random and then from there every note after is within 5 indexes of the previous note
 
 ALlow users to select what notes should always be sharp / flat since typically that is how it is presented
 Make them be like greyed out and then black if selected (also include a hover mechanic to explain what it does)

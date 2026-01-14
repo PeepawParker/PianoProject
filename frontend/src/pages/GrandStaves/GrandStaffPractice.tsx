@@ -13,11 +13,15 @@ import type { UserNote } from "./GrandStaff";
 interface GrandStaffPracticeProps {
   randomNotes: UserNote[];
   noteIndex: number;
+  trebleStaveBool: boolean;
+  bassStaveBool: boolean;
 }
 
 export default function GrandStaffPractice({
   randomNotes,
   noteIndex,
+  trebleStaveBool,
+  bassStaveBool,
 }: GrandStaffPracticeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -30,28 +34,37 @@ export default function GrandStaffPractice({
     vf.resize(500, 400);
     const context = vf.getContext();
 
-    const trebleStave = new Stave(10, 70, 480);
-    trebleStave.addClef("treble");
-    trebleStave.setContext(context).draw();
+    let trebleStave: Stave | boolean = false;
+    let bassStave: Stave | boolean = false;
 
-    const bassStave = new Stave(10, 130, 480);
-    bassStave.addClef("bass");
-    bassStave.setContext(context).draw();
+    if (trebleStaveBool) {
+      trebleStave = new Stave(10, 70, 480);
+      trebleStave.addClef("treble");
+      trebleStave.setContext(context).draw();
+    }
 
-    new StaveConnector(trebleStave, bassStave)
-      .setType(StaveConnector.type.BRACE)
-      .setContext(context)
-      .draw();
+    if (bassStaveBool) {
+      bassStave = new Stave(10, 130, 480);
+      bassStave.addClef("bass");
+      bassStave.setContext(context).draw();
+    }
 
-    new StaveConnector(trebleStave, bassStave)
-      .setType(StaveConnector.type.SINGLE_LEFT)
-      .setContext(context)
-      .draw();
+    if (trebleStave && bassStave) {
+      new StaveConnector(trebleStave, bassStave)
+        .setType(StaveConnector.type.BRACE)
+        .setContext(context)
+        .draw();
 
-    new StaveConnector(trebleStave, bassStave)
-      .setType(StaveConnector.type.SINGLE_RIGHT)
-      .setContext(context)
-      .draw();
+      new StaveConnector(trebleStave, bassStave)
+        .setType(StaveConnector.type.SINGLE_LEFT)
+        .setContext(context)
+        .draw();
+
+      new StaveConnector(trebleStave, bassStave)
+        .setType(StaveConnector.type.SINGLE_RIGHT)
+        .setContext(context)
+        .draw();
+    }
 
     const staveNotes: StaveNote[] = [];
 
@@ -60,8 +73,8 @@ export default function GrandStaffPractice({
 
       const note = new StaveNote({
         keys: [baseNote],
-        duration: "q",
-        clef: "treble",
+        duration: "w",
+        clef: trebleStaveBool ? "treble" : "bass",
       });
 
       if (noteType === "sharp") {
@@ -73,12 +86,24 @@ export default function GrandStaffPractice({
       staveNotes.push(note);
     }
 
-    const trebleVoice = new Voice({
-      numBeats: randomNotes.length,
-      beatValue: 4,
-    });
-    trebleVoice.addTickables(staveNotes);
-    new Formatter().joinVoices([trebleVoice]).format([trebleVoice], 100);
+    let trebleVoice: Voice | boolean = false;
+    let bassVoice: Voice | boolean = false;
+
+    if (trebleStave) {
+      trebleVoice = new Voice({
+        numBeats: randomNotes.length * 4,
+        beatValue: 4,
+      });
+      trebleVoice.addTickables(staveNotes);
+      new Formatter().joinVoices([trebleVoice]).format([trebleVoice], 100);
+    } else if (bassStave) {
+      bassVoice = new Voice({
+        numBeats: randomNotes.length * 4,
+        beatValue: 4,
+      });
+      bassVoice.addTickables(staveNotes);
+      new Formatter().joinVoices([bassVoice]).format([bassVoice], 100);
+    }
 
     // Sets color for user feedback to let them know if they got it right or wrong also sets the current note to orange to let users know what note they are on if they forgot
 
@@ -87,8 +112,12 @@ export default function GrandStaffPractice({
       strokeStyle: "orange",
     });
 
-    trebleVoice.draw(context, trebleStave);
-  }, [noteIndex, randomNotes]);
+    if (trebleVoice && trebleStave) {
+      trebleVoice.draw(context, trebleStave);
+    } else if (bassVoice && bassStave) {
+      bassVoice.draw(context, bassStave);
+    }
+  }, [bassStaveBool, noteIndex, randomNotes, trebleStaveBool]);
 
   return <div ref={containerRef} style={{ marginTop: "50px" }}></div>;
 }

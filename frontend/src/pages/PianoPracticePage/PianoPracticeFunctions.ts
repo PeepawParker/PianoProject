@@ -20,7 +20,6 @@ export function randomNote(
 
     if (noteIndex === 0) {
       firstIndexRef.current = randNum;
-      console.log("here is whatthe ref is now: ", firstIndexRef.current);
     }
   } else {
     // keeps within the min/max range
@@ -63,6 +62,5 @@ export function randomNote(
   // Need to update how I set the index because it will be updated dynamically
   // Dont check just set it to what the current index is
   // setRandomNote((prev) => prev[currentIndex]) when you do this also set the curRef
-  console.log("did we make it down here though?");
   return randomNote;
 }

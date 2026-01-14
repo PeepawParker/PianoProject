@@ -1,9 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import GrandStaffPractice from "../GrandStaves/GrandStaffPractice";
-import type { UserNote } from "../GrandStaves/GrandStaff";
 import { randomNote } from "./PianoPracticeFunctions";
 import { pianoLiveListener } from "../../util/pianoListenerSetup";
-import initializeRandNotes from "../../util/firstRandNote";
 import { usePractice } from "../../contexts/PracticeContext";
 
 export default function PracticePage() {
@@ -18,16 +16,19 @@ export default function PracticePage() {
     lowNoteIndex,
     seconds,
     numCorrect,
+    randomNotes,
+    noteIndex,
+    currentNoteRef,
+    trebleStave,
+    bassStave,
+    setNoteIndex,
     setSeconds,
     setNumCorrect,
+    setRandomNotes,
   } = usePractice();
-
-  const [randomNotes, setRandomNotes] = useState<UserNote[]>([]);
-  const [noteIndex, setNoteIndex] = useState<number>(0);
 
   const firstIndexRef = useRef<number | undefined>(undefined);
   const stopListenerRef = useRef<(() => void) | null>(null);
-  const currentNoteRef = useRef<UserNote | undefined>(undefined);
 
   const handleCorrectNote = useCallback(() => {
     setRandomNotes((prev) => {
@@ -50,9 +51,11 @@ export default function PracticePage() {
       return copy;
     });
 
-    setNoteIndex((i) => (i + 1 < numPracticeNotes ? i + 1 : 0));
-    setNumCorrect((n) => n + 1);
+    setNoteIndex((prev) => (prev + 1 < numPracticeNotes ? prev + 1 : 0));
+    setNumCorrect((prev) => prev + 1);
   }, [
+    setRandomNotes,
+    setNoteIndex,
     setNumCorrect,
     userKeys,
     trueRandom,
@@ -61,6 +64,7 @@ export default function PracticePage() {
     noteIndex,
     lowNoteIndex,
     highNoteIndex,
+    currentNoteRef,
     numPracticeNotes,
   ]);
 
@@ -89,35 +93,7 @@ export default function PracticePage() {
     }
 
     return () => stopListenerRef.current?.();
-  }, [handleCorrectNote, start]);
-
-  useEffect(() => {
-    if (start && randomNotes.length == 0) {
-      const firstNote = initializeRandNotes(
-        numPracticeNotes,
-        includeFlats,
-        includeSharps,
-        highNoteIndex,
-        lowNoteIndex,
-        userKeys,
-        trueRandom,
-        setRandomNotes
-      );
-      currentNoteRef.current = firstNote;
-      setNoteIndex(0);
-    }
-  }, [
-    highNoteIndex,
-    includeFlats,
-    includeSharps,
-    lowNoteIndex,
-    noteIndex,
-    numPracticeNotes,
-    randomNotes.length,
-    start,
-    trueRandom,
-    userKeys,
-  ]);
+  }, [currentNoteRef, handleCorrectNote, start]);
 
   return (
     <>
@@ -125,10 +101,15 @@ export default function PracticePage() {
         <div>
           <p>Correct: {numCorrect}</p>
           <p>
-            Time Eslapsed: {Math.floor(seconds / 60)}:
+            Time Elapsed: {Math.floor(seconds / 60)}:
             {seconds % 60 < 10 ? "0" + (seconds % 60) : seconds % 60}
           </p>
-          <GrandStaffPractice randomNotes={randomNotes} noteIndex={noteIndex} />
+          <GrandStaffPractice
+            randomNotes={randomNotes}
+            noteIndex={noteIndex}
+            trebleStaveBool={trebleStave}
+            bassStaveBool={bassStave}
+          />
         </div>
       ) : (
         <></>

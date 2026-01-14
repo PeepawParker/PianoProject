@@ -24,7 +24,6 @@ const Key88 = () => {
         const existingKey = userKeys?.find(
           (key) => key.note_id - 1 === current
         );
-        console.log(userKeys, current, existingKey);
         if (existingKey) {
           postPutUserPianoKey(
             pianoId!,
