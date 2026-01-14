@@ -10,7 +10,7 @@ export function randomNote(
   noteIndex: number,
   lowNoteIndex: number,
   highNoteIndex: number,
-  firstIndexRef: RefObject<number | undefined> // <- updated]
+  firstIndexRef: RefObject<number | undefined>
 ) {
   let randNum: number;
   if (trueRandom || noteIndex === 0) {
@@ -23,14 +23,10 @@ export function randomNote(
       console.log("here is whatthe ref is now: ", firstIndexRef.current);
     }
   } else {
-    const min = Math.max(lowNoteIndex, firstIndexRef.current! - 7); // clamp to lower bound
-    const max = Math.min(highNoteIndex, firstIndexRef.current! + 7); // clamp to upper bound
+    // keeps within the min/max range
+    const min = Math.max(lowNoteIndex, firstIndexRef.current! - 7);
+    const max = Math.min(highNoteIndex, firstIndexRef.current! + 7);
     randNum = Math.floor(Math.random() * (max - min + 1)) + min;
-    console.log(
-      "here is what the randNum is now",
-      randNum,
-      firstIndexRef.current
-    );
   }
 
   // since we are just making a copy you can update the baseNote, frequency, and accidental without having to worry about it messing up future things

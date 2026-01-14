@@ -4,8 +4,6 @@ import type { UserNote } from "../GrandStaves/GrandStaff";
 import { randomNote } from "./PianoPracticeFunctions";
 import { pianoLiveListener } from "../../util/pianoListenerSetup";
 import initializeRandNotes from "../../util/firstRandNote";
-import { useParams } from "react-router-dom";
-import { uploadUserData } from "../../api/Users/uploadUserData";
 import { usePractice } from "../../contexts/PracticeContext";
 
 export default function PracticePage() {
@@ -18,18 +16,18 @@ export default function PracticePage() {
     includeFlats,
     highNoteIndex,
     lowNoteIndex,
+    seconds,
+    numCorrect,
+    setSeconds,
+    setNumCorrect,
   } = usePractice();
 
   const [randomNotes, setRandomNotes] = useState<UserNote[]>([]);
   const [noteIndex, setNoteIndex] = useState<number>(0);
-  const [numCorrect, setNumCorrect] = useState<number>(0);
-  const [seconds, setSeconds] = useState<number>(0);
 
   const firstIndexRef = useRef<number | undefined>(undefined);
   const stopListenerRef = useRef<(() => void) | null>(null);
   const currentNoteRef = useRef<UserNote | undefined>(undefined);
-
-  const { pianoId } = useParams();
 
   const handleCorrectNote = useCallback(() => {
     setRandomNotes((prev) => {
@@ -55,6 +53,7 @@ export default function PracticePage() {
     setNoteIndex((i) => (i + 1 < numPracticeNotes ? i + 1 : 0));
     setNumCorrect((n) => n + 1);
   }, [
+    setNumCorrect,
     userKeys,
     trueRandom,
     includeSharps,
@@ -65,46 +64,6 @@ export default function PracticePage() {
     numPracticeNotes,
   ]);
 
-  //   // After a 1 second delay change to a new randomNote and reset correct to null
-  //   useEffect(() => {
-  //     if (correct === true) {
-  //       setTimeout(() => {
-  //         setRandomNotes((prevNotes) => {
-  //           const copy = [...prevNotes];
-
-  //           const note = randomNote(
-  //             userKeys,
-  //             trueRandom,
-  //             includeSharps,
-  //             includeFlats,
-  //             noteIndex,
-  //             lowNoteIndex,
-  //             highNoteIndex,
-  //             firstIndexRef
-  //           );
-  //           copy[noteIndex] = note;
-  //           currentNoteRef.current = copy[(noteIndex + 1) % numPracticeNotes];
-
-  //           return copy;
-  //         });
-
-  //         setCorrect(false);
-  //         setNoteIndex((i) => (i + 1 < numPracticeNotes ? i + 1 : 0));
-  //         setNumCorrect((prev) => prev + 1);
-  //       }, 250);
-  //     }
-  //   }, [
-  //     correct,
-  //     highNoteIndex,
-  //     includeFlats,
-  //     includeSharps,
-  //     lowNoteIndex,
-  //     noteIndex,
-  //     numPracticeNotes,
-  //     trueRandom,
-  //     userKeys,
-  //   ]);
-
   useEffect(() => {
     const id = setInterval(() => {
       if (start) {
@@ -113,7 +72,7 @@ export default function PracticePage() {
     }, 1000);
 
     return () => clearInterval(id);
-  }, [start]);
+  }, [setSeconds, start]);
 
   // Starts the listener if user selects start and a randomKey is ready
   useEffect(() => {
@@ -159,12 +118,6 @@ export default function PracticePage() {
     trueRandom,
     userKeys,
   ]);
-
-  useEffect(() => {
-    if (!start && seconds > 0 && numCorrect > 0 && pianoId) {
-      uploadUserData(numCorrect, seconds, pianoId);
-    }
-  }, [numCorrect, pianoId, seconds, start]);
 
   return (
     <>

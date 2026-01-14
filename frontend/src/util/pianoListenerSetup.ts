@@ -59,7 +59,7 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
   });
 }
 
-// This function will live listen to the frequencies that are being transmitted through the users mic. If at any point they are within the range that the program deems worthy it will mark the note as correct and then move onto the next random note within the users note selection
+// This function will live listen to the frequencies that are being transmitted through the users mic. If at any point they are within the range that the program deems worthy it will handleCorrectNote and then move onto the next random note within the users note selection
 
 export async function pianoLiveListener(
   getKeyFrequency: () => number,

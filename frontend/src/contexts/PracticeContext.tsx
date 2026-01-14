@@ -14,15 +14,19 @@ type PracticeContextType = {
   includeFlats: boolean;
   highNoteIndex: number;
   lowNoteIndex: number;
+  seconds: number;
+  numCorrect: number;
 
-  setStart: (start: boolean) => void;
-  setUserKeys: (keys: UserNote[]) => void;
-  setNumPracticeNotes: (pracNotes: number) => void;
-  setTrueRandom: (random: boolean) => void;
-  setIncludeSharps: (sharps: boolean) => void;
-  setIncludeFlats: (flats: boolean) => void;
-  setHighNoteIndex: (highIndex: number) => void;
-  setLowNoteIndex: (lowIndex: number) => void;
+  setStart: React.Dispatch<React.SetStateAction<boolean>>;
+  setUserKeys: React.Dispatch<React.SetStateAction<UserNote[]>>;
+  setNumPracticeNotes: React.Dispatch<React.SetStateAction<number>>;
+  setTrueRandom: React.Dispatch<React.SetStateAction<boolean>>;
+  setIncludeSharps: React.Dispatch<React.SetStateAction<boolean>>;
+  setIncludeFlats: React.Dispatch<React.SetStateAction<boolean>>;
+  setHighNoteIndex: React.Dispatch<React.SetStateAction<number>>;
+  setLowNoteIndex: React.Dispatch<React.SetStateAction<number>>;
+  setSeconds: React.Dispatch<React.SetStateAction<number>>;
+  setNumCorrect: React.Dispatch<React.SetStateAction<number>>;
 };
 
 const PracticeContext = createContext<PracticeContextType | null>(null);
@@ -36,6 +40,8 @@ export function PracticeProvider({ children }: { children: React.ReactNode }) {
   const [includeFlats, setIncludeFlats] = useState<boolean>(false);
   const [highNoteIndex, setHighNoteIndex] = useState<number>(0);
   const [lowNoteIndex, setLowNoteIndex] = useState<number>(0);
+  const [seconds, setSeconds] = useState<number>(0);
+  const [numCorrect, setNumCorrect] = useState<number>(0);
 
   const { userId } = useSelector((state: AppRootState) => state.user);
   const { pianoId } = useParams();
@@ -65,6 +71,8 @@ export function PracticeProvider({ children }: { children: React.ReactNode }) {
         includeFlats,
         highNoteIndex,
         lowNoteIndex,
+        seconds,
+        numCorrect,
         setStart,
         setUserKeys,
         setNumPracticeNotes,
@@ -73,6 +81,8 @@ export function PracticeProvider({ children }: { children: React.ReactNode }) {
         setIncludeFlats,
         setHighNoteIndex,
         setLowNoteIndex,
+        setSeconds,
+        setNumCorrect,
       }}
     >
       {children}

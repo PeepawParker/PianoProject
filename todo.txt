@@ -4,6 +4,10 @@ Tomorrow TODO:
 
     Have key tester where users can see which keys are out of tune and need to be remapped
 
+FIX THE USESTATES THAT YOU HAVE MOST OF THEM ARE UNNECESSARY
+
+todo make the upload data work again its not right now
+
 Allow user to select either treble/bass clef or both to practice on
 
 Metronome

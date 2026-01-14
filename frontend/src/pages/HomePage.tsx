@@ -57,7 +57,7 @@ function HomePage() {
                       ).toFixed(2)}{" "}
                       minutes
                       <br />
-                      {"Time Spent Correct Answers: "}
+                      {"Total Correct Answers: "}
                       {userPianoData[piano.id]?.correct_answers ?? 0} <br />
                       {"Average time to play correct key: "}
                       {(userPianoData[piano.id]?.seconds ?? 0) /

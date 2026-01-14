@@ -3,3 +3,9 @@ In general if the error occurs due to the sql not being able to run then you sho
 If I need the value to be the correct up to data piace of data use A ref otherwise a useState is fine
 
 Using the modulo operator is an easy way to prevent out of bounds and wrap around in an array
+
+You need to be using useEffect for cleaning/setting up side effect rather than controlling core logic. You are making lots of situations way more complex than necessary because you want a useState to control when every function runs. When possible which is more often than not you need to put the function directly where it should be called rather than having it be called as a side effect later on
+
+Use useEffect for setup/cleanup not as a do all (unless what youre doing is actually a side effect)
+
+useState rerenders the whole page so you don't need a useEffect to watch for these changes instead a simple if statement will work for many of the current UseStates fix this tomorrow
