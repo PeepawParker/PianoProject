@@ -10,8 +10,6 @@ import type { UserPianoData } from "../api/Users/uploadUserData";
 function HomePage() {
   const { userId } = useSelector((state: AppRootState) => state.user);
   const [userPianos, setUserPianos] = useState<Piano[] | undefined>(undefined);
-
-  // make this an object instead and then within the userPianos.map you will use the piano.id to key the remaining values
   const [userPianoData, setUserPianoData] = useState<
     | {
         [key: number]: UserPianoData;

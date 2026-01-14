@@ -1,0 +1,90 @@
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
+import type { AppRootState } from "../stores/store";
+import { getUserMappedKeys } from "../api/piano";
+import type { UserNote } from "../pages/GrandStaves/GrandStaff";
+
+type PracticeContextType = {
+  start: boolean;
+  userKeys: UserNote[];
+  numPracticeNotes: number;
+  trueRandom: boolean;
+  includeSharps: boolean;
+  includeFlats: boolean;
+  highNoteIndex: number;
+  lowNoteIndex: number;
+
+  setStart: (start: boolean) => void;
+  setUserKeys: (keys: UserNote[]) => void;
+  setNumPracticeNotes: (pracNotes: number) => void;
+  setTrueRandom: (random: boolean) => void;
+  setIncludeSharps: (sharps: boolean) => void;
+  setIncludeFlats: (flats: boolean) => void;
+  setHighNoteIndex: (highIndex: number) => void;
+  setLowNoteIndex: (lowIndex: number) => void;
+};
+
+const PracticeContext = createContext<PracticeContextType | null>(null);
+
+export function PracticeProvider({ children }: { children: React.ReactNode }) {
+  const [start, setStart] = useState<boolean>(false);
+  const [userKeys, setUserKeys] = useState<UserNote[]>([]);
+  const [numPracticeNotes, setNumPracticeNotes] = useState<number>(1);
+  const [trueRandom, setTrueRandom] = useState<boolean>(false);
+  const [includeSharps, setIncludeSharps] = useState<boolean>(false);
+  const [includeFlats, setIncludeFlats] = useState<boolean>(false);
+  const [highNoteIndex, setHighNoteIndex] = useState<number>(0);
+  const [lowNoteIndex, setLowNoteIndex] = useState<number>(0);
+
+  const { userId } = useSelector((state: AppRootState) => state.user);
+  const { pianoId } = useParams();
+
+  // Get user keys
+  useEffect(() => {
+    if (userId && pianoId) {
+      getUserMappedKeys(userId, pianoId, setUserKeys);
+    }
+  }, [pianoId, userId]);
+
+  // Set highNoteIndex when userKeys loads
+  useEffect(() => {
+    if (userKeys.length > 0) {
+      setHighNoteIndex(userKeys.length - 1);
+    }
+  }, [userKeys.length]);
+
+  return (
+    <PracticeContext.Provider
+      value={{
+        start,
+        userKeys,
+        numPracticeNotes,
+        trueRandom,
+        includeSharps,
+        includeFlats,
+        highNoteIndex,
+        lowNoteIndex,
+        setStart,
+        setUserKeys,
+        setNumPracticeNotes,
+        setTrueRandom,
+        setIncludeSharps,
+        setIncludeFlats,
+        setHighNoteIndex,
+        setLowNoteIndex,
+      }}
+    >
+      {children}
+    </PracticeContext.Provider>
+  );
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export function usePractice() {
+  const context = useContext(PracticeContext);
+  if (!context) {
+    throw new Error("usePractice must be used within PracticeProvider");
+  }
+  return context;
+}

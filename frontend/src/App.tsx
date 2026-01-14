@@ -9,7 +9,8 @@ import LoginPage from "./pages/LoginPage";
 import PianoSetupPage from "./pages/PianoProfileSetupPage";
 import PianoKeySetupPage from "./pages/PianoKeySetupPage";
 import PianoHomePage from "./pages/PianoHomePage";
-import PianoPracticePage from "./pages/PianoPracticePage";
+import PianoPracticeHomePage from "./pages/PianoPracticePage/PianoPracticeHomePage";
+import { PracticeProvider } from "./contexts/PracticeContext";
 
 const router = createBrowserRouter([
   {
@@ -23,7 +24,14 @@ const router = createBrowserRouter([
       { path: "/pianoSetup", element: <PianoSetupPage /> },
       { path: "/pianoKeySetup/:pianoId", element: <PianoKeySetupPage /> },
       { path: "/pianoHome/:pianoId", element: <PianoHomePage /> },
-      { path: "/pianoPractice/:pianoId", element: <PianoPracticePage /> },
+      {
+        path: "/pianoPractice/:pianoId",
+        element: (
+          <PracticeProvider>
+            <PianoPracticeHomePage />
+          </PracticeProvider>
+        ),
+      },
     ],
   },
 ]);

@@ -27,7 +27,7 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
       setTimeout(() => {
         stop();
         let tolerance;
-        if (frequenciesList[index] < 80) tolerance = 0.12;
+        if (frequenciesList[index] < 60) tolerance = 0.12;
         else if (frequenciesList[index] > 2000) tolerance = 0.015;
         else tolerance = 0.05;
         const newFrequencies: number[] = [];
@@ -48,8 +48,10 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
         });
         const average = total / newFrequencies.length;
 
+        console.log("here is the freq: ", newFrequencies);
+
         if (newFrequencies.length === 0) {
-          resolve(frequenciesList[index             ]);
+          resolve(0);
           return;
         }
 

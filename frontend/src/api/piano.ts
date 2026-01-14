@@ -89,7 +89,17 @@ export async function postPutUserPianoKey(
       note_id: response.data.pianoKey.id,
       frequency: response.data.pianoKey.frequency,
     };
-    setUserKeys((prevKeys) => [...prevKeys, newNote]);
+
+    setUserKeys((prevKeys) => {
+      return [...prevKeys, newNote];
+
+      // Only will need below if you revert the change that auto populates all the notes with default frequencies because otherwise the notes get all out of order when submitting and then it starts to break
+
+      // console.log("before:", prevKeys);
+      // const sortedPianoKeys = sortPianoKeys([...prevKeys, newNote]);
+      // console.log("after: ", sortedPianoKeys);
+      // return sortedPianoKeys;
+    });
   } else {
     await axios.put(
       `http://localhost:3000/api/piano/setup/key`,

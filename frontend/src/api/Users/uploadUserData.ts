@@ -11,13 +11,17 @@ export async function uploadUserData(
   seconds: number,
   pianoId: string
 ) {
-  await axios.post(
-    `http://localhost:3000/api/users/data`,
-    {
-      pianoId,
-      numCorrect,
-      seconds,
-    },
-    { withCredentials: true }
-  );
+  try {
+    await axios.post(
+      `http://localhost:3000/api/users/data`,
+      {
+        pianoId,
+        numCorrect,
+        seconds,
+      },
+      { withCredentials: true }
+    );
+  } catch (error) {
+    console.error("Failed to upload user data:", error);
+  }
 }

@@ -20,9 +20,11 @@ const Key88 = () => {
     try {
       const avg: number = await pianoListenerThreeSec(current);
       if (avg != 0) {
+        console.log("here was the avg: ", avg);
         const existingKey = userKeys?.find(
           (key) => key.note_id - 1 === current
         );
+        console.log(userKeys, current, existingKey);
         if (existingKey) {
           postPutUserPianoKey(
             pianoId!,
