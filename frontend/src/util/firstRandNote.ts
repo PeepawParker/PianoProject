@@ -10,14 +10,27 @@ export default function initializeRandNotes(
   highNoteIndex: number,
   lowNoteIndex: number,
   userKeys: UserNote[],
+  trueRandom: boolean,
   setRandomNotes: (notes: UserNote[]) => void
 ) {
   const randomNotes: RandomUserNote[] = [];
+  let firstIndex: number;
 
   for (let i = 0; i < numPracticeNotes; i++) {
-    const randNum =
-      Math.floor(Math.random() * (highNoteIndex - lowNoteIndex + 1)) +
-      lowNoteIndex;
+    let randNum: number;
+    if (trueRandom || i == 0) {
+      randNum =
+        Math.floor(Math.random() * (highNoteIndex - lowNoteIndex + 1)) +
+        lowNoteIndex;
+
+      if (i === 0) {
+        firstIndex = randNum;
+      }
+    } else {
+      const min = Math.max(lowNoteIndex, firstIndex! - 7); // clamp to lower bound
+      const max = Math.min(highNoteIndex, firstIndex! + 7); // clamp to upper bound
+      randNum = Math.floor(Math.random() * (max - min + 1)) + min;
+    }
     randomNotes.push({ ...userKeys[randNum], index: randNum });
   }
 

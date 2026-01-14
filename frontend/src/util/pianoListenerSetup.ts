@@ -48,8 +48,6 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
         });
         const average = total / newFrequencies.length;
 
-        console.log("here is the freq: ", newFrequencies);
-
         if (newFrequencies.length === 0) {
           resolve(0);
           return;
@@ -65,24 +63,32 @@ export function pianoListenerThreeSec(index: number): Promise<number> {
 
 export async function pianoLiveListener(
   getKeyFrequency: () => number,
-  setCorrect: (correct: boolean) => void
+  handleCorrectNote: () => void
 ): Promise<() => void> {
+  let handled = false;
+
   const { stop } = await pianoListenerSetup([], getKeyFrequency(), (pitch) => {
+    if (handled) return;
+
     const frequency = parseFloat(pitch.toFixed(2));
     const targetFrequency = getKeyFrequency();
+    if (!targetFrequency) return;
+
     const tolerance = targetFrequency < 80 ? 0.04 : 0.01;
 
-    // returns if the frequency was undefined
-    if (!targetFrequency) return;
     if (
       frequency >= targetFrequency - targetFrequency * tolerance &&
       frequency <= targetFrequency + targetFrequency * tolerance
     ) {
-      setCorrect(true);
+      handled = true;
+      handleCorrectNote();
     }
   });
 
-  return stop;
+  return () => {
+    handled = true;
+    stop();
+  };
 }
 
 async function pianoListenerSetup(

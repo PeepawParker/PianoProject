@@ -13,13 +13,11 @@ import type { UserNote } from "./GrandStaff";
 interface GrandStaffPracticeProps {
   randomNotes: UserNote[];
   noteIndex: number;
-  correct: boolean | null;
 }
 
 export default function GrandStaffPractice({
   randomNotes,
   noteIndex,
-  correct,
 }: GrandStaffPracticeProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -85,14 +83,12 @@ export default function GrandStaffPractice({
     // Sets color for user feedback to let them know if they got it right or wrong also sets the current note to orange to let users know what note they are on if they forgot
 
     staveNotes[noteIndex].setStyle({
-      fillStyle:
-        correct === true ? "green" : correct === false ? "red" : "orange",
-      strokeStyle:
-        correct === true ? "green" : correct === false ? "red" : "orange",
+      fillStyle: "orange",
+      strokeStyle: "orange",
     });
 
     trebleVoice.draw(context, trebleStave);
-  }, [correct, noteIndex, randomNotes]);
+  }, [noteIndex, randomNotes]);
 
   return <div ref={containerRef} style={{ marginTop: "50px" }}></div>;
 }

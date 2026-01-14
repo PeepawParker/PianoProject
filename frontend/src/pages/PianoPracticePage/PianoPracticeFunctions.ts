@@ -1,3 +1,4 @@
+import type { RefObject } from "react";
 import { enharmonicFlats } from "../../util/notes88";
 import type { UserNote } from "../GrandStaves/GrandStaff";
 
@@ -8,15 +9,28 @@ export function randomNote(
   includeFlats: boolean,
   noteIndex: number,
   lowNoteIndex: number,
-  highNoteIndex: number
+  highNoteIndex: number,
+  firstIndexRef: RefObject<number | undefined> // <- updated]
 ) {
   let randNum: number;
-  if (trueRandom || noteIndex == 0) {
+  if (trueRandom || noteIndex === 0) {
     randNum =
       Math.floor(Math.random() * (highNoteIndex - lowNoteIndex + 1)) +
       lowNoteIndex;
+
+    if (noteIndex === 0) {
+      firstIndexRef.current = randNum;
+      console.log("here is whatthe ref is now: ", firstIndexRef.current);
+    }
   } else {
-    randNum = randNum = 0;
+    const min = Math.max(lowNoteIndex, firstIndexRef.current! - 7); // clamp to lower bound
+    const max = Math.min(highNoteIndex, firstIndexRef.current! + 7); // clamp to upper bound
+    randNum = Math.floor(Math.random() * (max - min + 1)) + min;
+    console.log(
+      "here is what the randNum is now",
+      randNum,
+      firstIndexRef.current
+    );
   }
 
   // since we are just making a copy you can update the baseNote, frequency, and accidental without having to worry about it messing up future things
@@ -53,5 +67,6 @@ export function randomNote(
   // Need to update how I set the index because it will be updated dynamically
   // Dont check just set it to what the current index is
   // setRandomNote((prev) => prev[currentIndex]) when you do this also set the curRef
+  console.log("did we make it down here though?");
   return randomNote;
 }

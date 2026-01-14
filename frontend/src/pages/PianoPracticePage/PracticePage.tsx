@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import GrandStaffPractice from "../GrandStaves/GrandStaffPractice";
 import type { UserNote } from "../GrandStaves/GrandStaff";
 import { randomNote } from "./PianoPracticeFunctions";
@@ -22,53 +22,88 @@ export default function PracticePage() {
 
   const [randomNotes, setRandomNotes] = useState<UserNote[]>([]);
   const [noteIndex, setNoteIndex] = useState<number>(0);
-  const [correct, setCorrect] = useState<boolean | null>(null);
   const [numCorrect, setNumCorrect] = useState<number>(0);
   const [seconds, setSeconds] = useState<number>(0);
 
+  const firstIndexRef = useRef<number | undefined>(undefined);
   const stopListenerRef = useRef<(() => void) | null>(null);
   const currentNoteRef = useRef<UserNote | undefined>(undefined);
 
   const { pianoId } = useParams();
 
-  // After a 1 second delay change to a new randomNote and reset correct to null
-  useEffect(() => {
-    if (correct === true) {
-      setTimeout(() => {
-        setRandomNotes((prevNotes) => {
-          const copy = [...prevNotes];
+  const handleCorrectNote = useCallback(() => {
+    setRandomNotes((prev) => {
+      const copy = [...prev];
 
-          const note = randomNote(
-            userKeys,
-            trueRandom,
-            includeSharps,
-            includeFlats,
-            noteIndex,
-            lowNoteIndex,
-            highNoteIndex
-          );
-          copy[noteIndex] = note;
-          currentNoteRef.current = copy[(noteIndex + 1) % numPracticeNotes];
+      const note = randomNote(
+        userKeys,
+        trueRandom,
+        includeSharps,
+        includeFlats,
+        noteIndex,
+        lowNoteIndex,
+        highNoteIndex,
+        firstIndexRef
+      );
 
-          return copy;
-        });
+      copy[noteIndex] = note;
+      currentNoteRef.current = copy[(noteIndex + 1) % numPracticeNotes];
 
-        setNoteIndex((i) => (i + 1 < numPracticeNotes ? i + 1 : 0));
-        setNumCorrect((prev) => prev + 1);
-        setCorrect(null);
-      }, 250);
-    }
+      return copy;
+    });
+
+    setNoteIndex((i) => (i + 1 < numPracticeNotes ? i + 1 : 0));
+    setNumCorrect((n) => n + 1);
   }, [
-    correct,
-    highNoteIndex,
-    includeFlats,
-    includeSharps,
-    lowNoteIndex,
-    noteIndex,
-    numPracticeNotes,
-    trueRandom,
     userKeys,
+    trueRandom,
+    includeSharps,
+    includeFlats,
+    noteIndex,
+    lowNoteIndex,
+    highNoteIndex,
+    numPracticeNotes,
   ]);
+
+  //   // After a 1 second delay change to a new randomNote and reset correct to null
+  //   useEffect(() => {
+  //     if (correct === true) {
+  //       setTimeout(() => {
+  //         setRandomNotes((prevNotes) => {
+  //           const copy = [...prevNotes];
+
+  //           const note = randomNote(
+  //             userKeys,
+  //             trueRandom,
+  //             includeSharps,
+  //             includeFlats,
+  //             noteIndex,
+  //             lowNoteIndex,
+  //             highNoteIndex,
+  //             firstIndexRef
+  //           );
+  //           copy[noteIndex] = note;
+  //           currentNoteRef.current = copy[(noteIndex + 1) % numPracticeNotes];
+
+  //           return copy;
+  //         });
+
+  //         setCorrect(false);
+  //         setNoteIndex((i) => (i + 1 < numPracticeNotes ? i + 1 : 0));
+  //         setNumCorrect((prev) => prev + 1);
+  //       }, 250);
+  //     }
+  //   }, [
+  //     correct,
+  //     highNoteIndex,
+  //     includeFlats,
+  //     includeSharps,
+  //     lowNoteIndex,
+  //     noteIndex,
+  //     numPracticeNotes,
+  //     trueRandom,
+  //     userKeys,
+  //   ]);
 
   useEffect(() => {
     const id = setInterval(() => {
@@ -85,7 +120,7 @@ export default function PracticePage() {
     if (start && currentNoteRef.current) {
       pianoLiveListener(
         () => currentNoteRef.current!.frequency,
-        setCorrect
+        handleCorrectNote
       ).then((stop) => {
         stopListenerRef.current = stop; // Pointer to the function that will stop the listener
       });
@@ -95,7 +130,7 @@ export default function PracticePage() {
     }
 
     return () => stopListenerRef.current?.();
-  }, [start]);
+  }, [handleCorrectNote, start]);
 
   useEffect(() => {
     if (start && randomNotes.length == 0) {
@@ -106,6 +141,7 @@ export default function PracticePage() {
         highNoteIndex,
         lowNoteIndex,
         userKeys,
+        trueRandom,
         setRandomNotes
       );
       currentNoteRef.current = firstNote;
@@ -116,9 +152,11 @@ export default function PracticePage() {
     includeFlats,
     includeSharps,
     lowNoteIndex,
+    noteIndex,
     numPracticeNotes,
     randomNotes.length,
     start,
+    trueRandom,
     userKeys,
   ]);
 
@@ -137,11 +175,7 @@ export default function PracticePage() {
             Time Eslapsed: {Math.floor(seconds / 60)}:
             {seconds % 60 < 10 ? "0" + (seconds % 60) : seconds % 60}
           </p>
-          <GrandStaffPractice
-            randomNotes={randomNotes}
-            noteIndex={noteIndex}
-            correct={correct}
-          />
+          <GrandStaffPractice randomNotes={randomNotes} noteIndex={noteIndex} />
         </div>
       ) : (
         <></>
